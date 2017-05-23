@@ -21,6 +21,7 @@
 import React from 'react';
 import NumberList from './NumberList.jsx'
 import MessageList from './MessageList.jsx'
+import MessageLog from './MessageLog.jsx'
 import { SaveButton, LoadButton } from './SaveSettings.jsx'
 
 
@@ -123,11 +124,15 @@ var Application = React.createClass({
           <LoadButton />
     		</div>
     	</div>
+      <div className="pure-g">
+        <MessageLog />
+      </div>
     	<div className="pure-g">
       	<NumberList />
       	<div className="pure-u-1-24"></div>
       	<MessageList />
     	</div>
+
     	</div>
     )
 	}

@@ -24,7 +24,29 @@ const initialState = {
   selectedNums:[],
   twilioSID:'',
   twilioAut:'',
-  twilioNum:''
+  twilioNum:'',
+  replies:[]
+}
+
+// GetSMS gets all the SMS messages that have been sent to dstNum in the twilio account identified by
+// twilioSID and twilioAut. Returns a promise that resolves to parsed JSON.
+function GetSMS(twilioSID, twilioAut, dstNum) {
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open("GET",
+             'https://api.twilio.com/2010-04-01/Accounts/' + twilioSID + '/Messages.json?PageSize=1000',
+             true);
+    xhr.setRequestHeader("Authorization", "Basic " + window.btoa(twilioSID + ':' + twilioAut));
+
+    xhr.onreadystatechange = function() {
+      if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+        resolve(JSON.parse(xhr.responseText));
+      }
+    }
+
+    xhr.send();
+  });
 }
 
 // SendSMS triggers the twilio account identified by twilioSID and twilioAuth to send a SMS msg from
@@ -64,7 +86,8 @@ function Switchboard(state, action) {
  				selectedNums: state.selectedNums,
  				twilioSID: state.twilioSID,
  				twilioAut: state.twilioAut,
- 				twilioNum: state.twilioNum
+ 				twilioNum: state.twilioNum,
+        replies: state.replies
  			};
 
  		case 'ADD_MESSAGE':
@@ -74,7 +97,8 @@ function Switchboard(state, action) {
  				selectedNums: state.selectedNums,
  				twilioSID: state.twilioSID,
  				twilioAut: state.twilioAut,
- 				twilioNum: state.twilioNum
+ 				twilioNum: state.twilioNum,
+        replies: state.replies
  			};
 
  		case 'SELECT_NUMBERS':
@@ -84,7 +108,8 @@ function Switchboard(state, action) {
  				selectedNums: action.numbers,
  				twilioSID: state.twilioSID,
  				twilioAut: state.twilioAut,
- 				twilioNum: state.twilioNum
+ 				twilioNum: state.twilioNum,
+        replies: state.replies
  			};
 
  		case 'LOAD_SETTINGS':
@@ -96,7 +121,8 @@ function Switchboard(state, action) {
  				selectedNums: data.selectedNums,
  				twilioSID: data.twilioSID,
  				twilioAut: data.twilioAut,
- 				twilioNum: data.twilioNum
+ 				twilioNum: data.twilioNum,
+        replies: state.replies
  			};
 
  		case 'SET_TWILIOSID':
@@ -106,7 +132,8 @@ function Switchboard(state, action) {
  				selectedNums: state.selectedNums,
  				twilioSID: action.twilioSID,
  				twilioAut: state.twilioAut,
- 				twilioNum: state.twilioNum
+ 				twilioNum: state.twilioNum,
+        replies: state.replies
  			};
 
  		case 'SET_TWILIOAUT':
@@ -116,7 +143,8 @@ function Switchboard(state, action) {
  				selectedNums: state.selectedNums,
  				twilioSID: state.twilioSID,
  				twilioAut: action.twilioAut,
- 				twilioNum: state.twilioNum
+ 				twilioNum: state.twilioNum,
+        replies: state.replies
  			};
 
  		case 'SET_TWILIONUM':
@@ -126,12 +154,24 @@ function Switchboard(state, action) {
  				selectedNums: state.selectedNums,
  				twilioSID: state.twilioSID,
  				twilioAut: state.twilioAut,
- 				twilioNum: action.twilioNum
+ 				twilioNum: action.twilioNum,
+        replies: state.replies
  			};
+
+    case 'SET_REPLIES':
+      return {
+        numbers: state.numbers,
+        messages: state.messages,
+        selectedNums: state.selectedNums,
+        twilioSID: state.twilioSID,
+        twilioAut: state.twilioAut,
+        twilioNum: state.twilioNum,
+        replies: action.replies
+      };
 
  		default:
  			return state;
  	}
  }
 
- export { Switchboard, SendSMS }
+ export { Switchboard, SendSMS, GetSMS }

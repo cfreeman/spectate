@@ -28,6 +28,7 @@
  				Switchboard(undefined, {})
  			).toEqual({numbers:[],
  					   messages:[],
+ 					   replies:[],
  					   selectedNums:[],
 					   twilioAut:'',
  					   twilioNum:'',
@@ -37,6 +38,7 @@
  		it('should be able to add a number', () => {
  			expect(Switchboard({numbers:[],
  							    messages:[],
+ 							    replies:[],
  							    selectedNums:[],
  								twilioAut:'',
  								twilioNum:'',
@@ -44,6 +46,7 @@
  							   {type: 'ADD_NUMBER', number: '5551'})
  			).toEqual({numbers:['5551'],
  					   messages:[],
+ 					   replies:[],
  					   selectedNums:[],
  					   twilioAut:'',
  					   twilioNum:'',
@@ -53,6 +56,7 @@
  		it('should be able to add a message', () => {
  			expect(Switchboard({numbers:[],
  								messages:[],
+ 								replies:[],
  								selectedNums:[],
  								twilioAut:'',
  								twilioNum:'',
@@ -60,6 +64,7 @@
  							  {type: 'ADD_MESSAGE', message: 'This is another message'})
  			).toEqual({numbers:[],
  					   messages:['This is another message'],
+ 					   replies:[],
  					   selectedNums:[],
  					   twilioAut:'',
  					   twilioNum:'',
@@ -69,6 +74,7 @@
  		it('should be able to select numbers', () => {
  			expect(Switchboard({numbers:['123'],
  								messages:[],
+ 								replies:[],
  								selectedNums:[],
  								twilioAut:'',
  					   			twilioNum:'',
@@ -76,6 +82,7 @@
  							   {type: 'SELECT_NUMBERS', numbers:['123']})
 			).toEqual({numbers:['123'],
 					   messages:[],
+					   replies:[],
 					   selectedNums:['123'],
 					   twilioAut:'',
  					   twilioNum:'',
@@ -85,6 +92,7 @@
  		it('should be able to load settings', () => {
  			expect(Switchboard({numbers:[],
  								messages:[],
+ 								replies:[],
  								selectedNums:[],
  								twilioAut:'',
  					   			twilioNum:'',
@@ -93,6 +101,7 @@
  							   	contents:'{"numbers":["+614"],"messages":["Hello friend"],"selectedNums":[],"twilioSID":"AC","twilioAut":"46","twilioNum":"+61"}'})
 			).toEqual({numbers:['+614'],
 					   messages:['Hello friend'],
+					   replies:[],
 					   selectedNums:[],
 					   twilioAut:'46',
  					   twilioNum:'+61',
@@ -102,6 +111,7 @@
  		it('should be able to set twilio sid', () => {
  			expect(Switchboard({numbers:[],
  							    messages:[],
+ 							    replies:[],
  							    selectedNums:[],
  								twilioAut:'',
  								twilioNum:'',
@@ -109,6 +119,7 @@
  							   {type: 'SET_TWILIOSID', twilioSID: 'ab'})
  			).toEqual({numbers:[],
  					   messages:[],
+ 					   replies:[],
  					   selectedNums:[],
  					   twilioAut:'',
  					   twilioNum:'',
@@ -118,6 +129,7 @@
  		it('should be able to set twilio aut', () => {
  			expect(Switchboard({numbers:[],
  							    messages:[],
+ 							    replies:[],
  							    selectedNums:[],
  								twilioAut:'',
  								twilioNum:'',
@@ -125,6 +137,7 @@
  							   {type: 'SET_TWILIOAUT', twilioAut: 'ab'})
  			).toEqual({numbers:[],
  					   messages:[],
+ 					   replies:[],
  					   selectedNums:[],
  					   twilioAut:'ab',
  					   twilioNum:'',
@@ -134,6 +147,7 @@
  		it('should be able to set twilio num', () => {
  			expect(Switchboard({numbers:[],
  							    messages:[],
+ 							    replies:[],
  							    selectedNums:[],
  								twilioAut:'',
  								twilioNum:'',
@@ -141,9 +155,28 @@
  							   {type: 'SET_TWILIONUM', twilioNum: '12'})
  			).toEqual({numbers:[],
  					   messages:[],
+ 					   replies:[],
  					   selectedNums:[],
  					   twilioAut:'',
  					   twilioNum:'12',
+ 					   twilioSID:''})
+ 		})
+
+ 		it('should be able to set the list of replies', () => {
+ 			expect(Switchboard({numbers:[],
+ 							    messages:[],
+ 							    replies:[],
+ 							    selectedNums:[],
+ 								twilioAut:'',
+ 								twilioNum:'',
+ 								twilioSID:''},
+ 							   {type: 'SET_REPLIES', replies: ['12', '11']})
+ 			).toEqual({numbers:[],
+ 					   messages:[],
+ 					   replies:['12', '11'],
+ 					   selectedNums:[],
+ 					   twilioAut:'',
+ 					   twilioNum:'',
  					   twilioSID:''})
  		})
 
