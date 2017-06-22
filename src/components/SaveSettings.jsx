@@ -18,6 +18,7 @@
  */
 "use strict";
 
+import { Map } from 'immutable';
 import React from 'react';
 
 var SaveButton = React.createClass({

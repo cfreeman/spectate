@@ -19,6 +19,7 @@
 "use strict";
 
 import React from 'react';
+import { Map } from 'immutable';
 import { SendSMS } from '../reducers/index.js';
 
 var MessageButton = React.createClass({
@@ -28,19 +29,29 @@ var MessageButton = React.createClass({
     var state = store.getState();
     var msg = this.props.message;
 
-    state.selectedNums.map(function(n) {
-      SendSMS(state.twilioSID, state.twilioAut, n, state.twilioNum, msg);
-      console.log('sending SMS to' + n);
-    })
+    if (typeof this.props.first != 'undefined' && !this.props.first) {
+      store.dispatch({ type:'FIRST_SENT'});
+    }
+
+    // If number supplied via props - just send to that.
+    if (typeof this.props.number != 'undefined') {
+      SendSMS(state.twilioSID, state.twilioAut, this.props.number, state.twilioNum, msg);
+
+    // No number supplied via props - send to everyone.
+    } else {
+      state.numbers.map(function(v, n) {
+        SendSMS(state.twilioSID, state.twilioAut, n, state.twilioNum, msg);
+      })
+    }
   },
 
   render: function() {
     const { store } = this.context;
     var state = store.getState();
 
-    var buttonClass = "button-success pure-button pure-button-disabled"
-    if (state.selectedNums.length > 0) {
-      buttonClass = "button-success pure-button";
+    var buttonClass = "button-success pure-button"
+    if (typeof this.props.first != 'undefined' && this.props.first) {
+      return null;
     }
 
     return <p><button className={buttonClass} onClick={this.handleSendSMS}>{this.props.message}</button></p>;
@@ -50,45 +61,4 @@ MessageButton.contextTypes = {
   store: React.PropTypes.object
 };
 
-var MessageList = React.createClass({
-  handleKeyPress: function(event) {
-    if(event.key == 'Enter') {
-      this.handleAddMessage();
-    }
-  },
-
-  handleAddMessage: function() {
-    const { store } = this.context;
-    store.dispatch({ type:'ADD_MESSAGE',
-                     message:document.getElementById('MessageField').value});
-    document.getElementById('MessageField').value = "";
-  },
-
-	render: function() {
-		const { store } = this.context;
-    var state = store.getState();
-
-    var m = <p>Use 'update messages' to create SMS templates that can be sent.</p>
-    if (state.messages.length > 0) {
-      m = state.messages.map(function(msg) {return <MessageButton key={msg} message={msg} />})
-    }
-
-		return (
-		  <div className="pure-u-18-24">
-        <fieldset className="pure-form">
-        <legend><b>Update Messages:</b></legend>
-        <input id="MessageField" type="text" placeholder="Message" onKeyPress={this.handleKeyPress}></input>
-        <button className="pure-button pure-button-primary" onClick={this.handleAddMessage}>Add</button>
-        </fieldset>
-
-        <h2>3. Send message:</h2>
-        { m }
-      </div>
-    )
-	}
-})
-MessageList.contextTypes = {
-	store: React.PropTypes.object
-};
-
-export default MessageList
+export default MessageButton

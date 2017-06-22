@@ -18,14 +18,17 @@
  */
 "use strict";
 
+import { fromJS } from 'immutable'
+import { Map } from 'immutable'
+
 const initialState = {
-  numbers:[],
-  messages:[],
-  selectedNums:[],
+  numbers:Map({}),
+  msgTree:[],
   twilioSID:'',
   twilioAut:'',
   twilioNum:'',
-  replies:[]
+  replies:{},
+  firstSent: false
 }
 
 // GetSMS gets all the SMS messages that have been sent to dstNum in the twilio account identified by
@@ -34,8 +37,14 @@ function GetSMS(twilioSID, twilioAut, dstNum) {
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest();
 
+    // Get only messages starting from the beginning of the performance.
+    var now = new Date;
+    var yr = now.getUTCFullYear();
+    var mt = now.getUTCMonth() + 1;
+    var dy = now.getUTCDate();
+
     xhr.open("GET",
-             'https://api.twilio.com/2010-04-01/Accounts/' + twilioSID + '/Messages.json?PageSize=1000',
+             'https://api.twilio.com/2010-04-01/Accounts/' + twilioSID + '/Messages.json?DateSent>='+yr+'-'+mt+'-'+dy+'&PageSize=1000',
              true);
     xhr.setRequestHeader("Authorization", "Basic " + window.btoa(twilioSID + ':' + twilioAut));
 
@@ -81,92 +90,103 @@ function Switchboard(state, action) {
  	switch (action.type) {
  		case 'ADD_NUMBER':
  			return {
- 				numbers: state.numbers.concat([action.number]),
- 				messages: state.messages,
- 				selectedNums: state.selectedNums,
+ 				numbers: state.numbers.set(action.number, 0),
+        msgTree: state.msgTree,
  				twilioSID: state.twilioSID,
  				twilioAut: state.twilioAut,
  				twilioNum: state.twilioNum,
-        replies: state.replies
+        replies: state.replies,
+        firstSent: state.firstSent
  			};
 
- 		case 'ADD_MESSAGE':
- 			return {
- 				numbers: state.numbers,
- 				messages: state.messages.concat([action.message]),
- 				selectedNums: state.selectedNums,
- 				twilioSID: state.twilioSID,
- 				twilioAut: state.twilioAut,
- 				twilioNum: state.twilioNum,
-        replies: state.replies
- 			};
+    case 'FIRST_SENT':
+      return {
+        numbers: state.numbers,
+        msgTree: state.msgTree,
+        twilioSID: state.twilioSID,
+        twilioAut: state.twilioAut,
+        twilioNum: state.twilioNum,
+        replies: state.replies,
+        firstSent: true
 
- 		case 'SELECT_NUMBERS':
- 			return {
- 				numbers: state.numbers,
- 				messages: state.messages,
- 				selectedNums: action.numbers,
- 				twilioSID: state.twilioSID,
- 				twilioAut: state.twilioAut,
- 				twilioNum: state.twilioNum,
-        replies: state.replies
- 			};
+      };
 
  		case 'LOAD_SETTINGS':
  			var data = JSON.parse(action.contents);
 
  			return {
- 				numbers: data.numbers,
- 				messages: data.messages,
- 				selectedNums: data.selectedNums,
+ 				numbers: fromJS(data.numbers),
+        msgTree: data.msgTree,
  				twilioSID: data.twilioSID,
  				twilioAut: data.twilioAut,
  				twilioNum: data.twilioNum,
-        replies: state.replies
+        replies: state.replies,
+        firstSent: state.firstSent
  			};
 
  		case 'SET_TWILIOSID':
  			return {
  				numbers: state.numbers,
- 				messages: state.messages,
- 				selectedNums: state.selectedNums,
+        msgTree: state.msgTree,
  				twilioSID: action.twilioSID,
  				twilioAut: state.twilioAut,
  				twilioNum: state.twilioNum,
-        replies: state.replies
+        replies: state.replies,
+        firstSent: state.firstSent
  			};
 
  		case 'SET_TWILIOAUT':
  			return {
  				numbers: state.numbers,
- 				messages: state.messages,
- 				selectedNums: state.selectedNums,
+        msgTree: state.msgTree,
  				twilioSID: state.twilioSID,
  				twilioAut: action.twilioAut,
  				twilioNum: state.twilioNum,
-        replies: state.replies
+        replies: state.replies,
+        firstSent: state.firstSent
  			};
 
  		case 'SET_TWILIONUM':
  			return {
  				numbers: state.numbers,
- 				messages: state.messages,
- 				selectedNums: state.selectedNums,
+        msgTree: state.msgTree,
  				twilioSID: state.twilioSID,
  				twilioAut: state.twilioAut,
  				twilioNum: action.twilioNum,
-        replies: state.replies
+        replies: state.replies,
+        firstSent: state.firstSent
  			};
 
-    case 'SET_REPLIES':
+    case 'SET_DEPTH':
       return {
-        numbers: state.numbers,
-        messages: state.messages,
-        selectedNums: state.selectedNums,
+        numbers: state.numbers.set(action.number, action.depth),
+        msgTree: state.msgTree,
         twilioSID: state.twilioSID,
         twilioAut: state.twilioAut,
         twilioNum: state.twilioNum,
-        replies: action.replies
+        replies: state.replies,
+        firstSent: state.firstSent
+      };
+
+    case 'SET_REPLIES':
+      var newList = {};
+
+      action.replies.messages.map(function(reply) {
+        if (reply.sid in state.replies) {
+          newList[reply.sid] = state.replies[reply.sid];
+        } else {
+          newList[reply.sid] = reply;
+        }
+      });
+
+      return {
+        numbers: state.numbers,
+        msgTree: state.msgTree,
+        twilioSID: state.twilioSID,
+        twilioAut: state.twilioAut,
+        twilioNum: state.twilioNum,
+        replies: newList,
+        firstSent: state.firstSent
       };
 
  		default:

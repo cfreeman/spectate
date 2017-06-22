@@ -23,6 +23,10 @@ legend {
 	border-bottom: 0px !important;
 }
 
+.add {
+    margin-left:11px;
+}
+
 #MessageField, #PhoneNumber, #twilioSID {
 	margin-right: 5px !important;
 }
@@ -43,4 +47,9 @@ legend {
     opacity: 0;
     filter: alpha(opacity=0);
 }
-
+.log {
+    font-family: consolas, monospace;
+    font-size: 10px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}

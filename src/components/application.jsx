@@ -19,11 +19,10 @@
 "use strict";
 
 import React from 'react';
+import { GetSMS } from '../reducers/index.js';
 import NumberList from './NumberList.jsx'
-import MessageList from './MessageList.jsx'
 import MessageLog from './MessageLog.jsx'
 import { SaveButton, LoadButton } from './SaveSettings.jsx'
-
 
 var TwilioSID = React.createClass({
   getIntialState: function() {
@@ -106,7 +105,24 @@ TwilioNum.contextTypes = {
 
 
 var Application = React.createClass({
-	render: function() {
+	loadFromServer: function() {
+    const { store } = this.context;
+    var state = store.getState();
+
+    if (state.twilioSID != '' && state.twilioAut != '' && state.twilioNum) {
+      var smsP = GetSMS(state.twilioSID, state.twilioAut, twilioNum);
+      smsP.then(function(value) {
+        store.dispatch({type: 'SET_REPLIES', replies:value});
+      });
+    }
+  },
+
+  componentDidMount: function() {
+    this.loadFromServer();
+    setInterval(this.loadFromServer, 2000);
+  },
+
+  render: function() {
 		const { store } = this.context;
     var state = store.getState();
 
@@ -115,24 +131,17 @@ var Application = React.createClass({
 		  <div className="pure-g">
     		<div className="pure-u-1-1">
     			<h1>SPECTATE Switchboard</h1>
-    			<h2>1. Configure: </h2>
       		<fieldset className="pure-form">
-      		<legend><b>Twilio Settings:</b></legend>
       		<TwilioSID /><TwilioAut /><TwilioNum />
       		</fieldset>
           <SaveButton />
           <LoadButton />
     		</div>
     	</div>
-      <div className="pure-g">
-        <MessageLog />
-      </div>
     	<div className="pure-g">
       	<NumberList />
-      	<div className="pure-u-1-24"></div>
-      	<MessageList />
+        <MessageLog />
     	</div>
-
     	</div>
     )
 	}

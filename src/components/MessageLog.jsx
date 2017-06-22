@@ -19,14 +19,51 @@
 "use strict";
 
 import React from 'react';
+import { Map } from 'immutable';
+import MessageButton from './MessageList.jsx'
 
 var MessageLog = React.createClass({
 	render: function() {
+		const { store } = this.context;
+    	var state = store.getState();
 
+    	console.log(state.replies);
+
+    	var replies = [];
+
+    	if (state.replies) {
+    		for (var id in state.replies) {
+	    		var direction = ['Sent', 'to'];
+	    		var dst = state.replies[id].to
+	    		var btns = ""
+
+	    		// Many of the operations only apply to inbound messages.
+	    		if (state.replies[id].direction == 'inbound') {
+	    			direction = ['Recieved', 'from'];
+	    			dst = state.replies[id].from
+
+	    			var pos = state.msgTree[state.numbers.get(dst)]
+	    			var btns = pos.children.map(function(id) {
+	    				return <MessageButton key={msg} number={dst} message={state.msgTree[id].text} />;
+	    			})
+	    		}
+
+	    		replies.push(
+	    		<p className="log">{direction[0]} <b>'{state.replies[id].body}'</b> {direction[1]} {dst}. {btns}</p>);
+	    	}
+	    }
+
+	    var button = null
+	    if (state.msgTree.length != 0) {
+	    	var msg = state.msgTree[0].text;
+    		button = <MessageButton key={msg} message={msg} first={state.firstSent} />
+	    }
 
 		return (
-			<div className="pure-u-1-1">
-				<p>DAS LOG</p>
+			<div className="pure-u-17-24">
+				<h2>Message Flow:</h2>
+				{ button }
+				{ replies }
 			</div>
 		)
 	}

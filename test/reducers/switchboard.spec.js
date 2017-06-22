@@ -19,6 +19,7 @@
 "use strict";
 
  import expect from 'expect';
+ import { Map } from 'immutable';
  import { Switchboard } from '../../src/reducers';
 
  describe('reducers', () => {
@@ -26,158 +27,159 @@
  		it('should provide the initial state', () => {
  			expect(
  				Switchboard(undefined, {})
- 			).toEqual({numbers:[],
- 					   messages:[],
- 					   replies:[],
- 					   selectedNums:[],
+ 			).toEqual({numbers:Map({}),
+ 					   msgTree:[],
+ 					   replies:{},
 					   twilioAut:'',
  					   twilioNum:'',
- 					   twilioSID:''})
+ 					   twilioSID:'',
+ 					   firstSent:false})
  		})
 
  		it('should be able to add a number', () => {
- 			expect(Switchboard({numbers:[],
- 							    messages:[],
- 							    replies:[],
- 							    selectedNums:[],
+ 			expect(Switchboard({numbers:Map({}),
+ 								msgTree:[],
+ 							    replies:{},
  								twilioAut:'',
  								twilioNum:'',
- 								twilioSID:''},
- 							   {type: 'ADD_NUMBER', number: '5551'})
- 			).toEqual({numbers:['5551'],
- 					   messages:[],
- 					   replies:[],
- 					   selectedNums:[],
+ 								twilioSID:'',
+ 								firstSent: false},
+ 							   {type: 'ADD_NUMBER', number: '+5551'})
+ 			).toEqual({numbers:Map({'+5551':0}),
+ 					   msgTree:[],
+ 					   replies:{},
  					   twilioAut:'',
  					   twilioNum:'',
- 					   twilioSID:''})
+ 					   twilioSID:'',
+ 					   firstSent: false})
  		})
 
- 		it('should be able to add a message', () => {
- 			expect(Switchboard({numbers:[],
- 								messages:[],
- 								replies:[],
- 								selectedNums:[],
+		it('should be set depth', () => {
+ 			expect(Switchboard({numbers:Map({'+5551':0}),
+ 								msgTree:[],
+ 							    replies:{},
  								twilioAut:'',
  								twilioNum:'',
- 								twilioSID:''},
- 							  {type: 'ADD_MESSAGE', message: 'This is another message'})
+ 								twilioSID:'',
+ 								firstSent: false},
+ 							   {type: 'SET_DEPTH', number: '+5551', depth: 2})
+ 			).toEqual({numbers:Map({'+5551':2}),
+ 					   msgTree:[],
+ 					   replies:{},
+ 					   twilioAut:'',
+ 					   twilioNum:'',
+ 					   twilioSID:'',
+ 					   firstSent: false})
+ 		})
+
+ 		it('should be able to mark first sent', () => {
+ 			expect(Switchboard({numbers:[],
+ 								msgTree:[],
+ 							    replies:{},
+ 								twilioAut:'',
+ 								twilioNum:'',
+ 								twilioSID:'',
+ 								firstSent: false},
+ 							   {type: 'FIRST_SENT'})
  			).toEqual({numbers:[],
- 					   messages:['This is another message'],
- 					   replies:[],
- 					   selectedNums:[],
+ 					   msgTree:[],
+ 					   replies:{},
  					   twilioAut:'',
  					   twilioNum:'',
- 					   twilioSID:''})
- 		})
-
- 		it('should be able to select numbers', () => {
- 			expect(Switchboard({numbers:['123'],
- 								messages:[],
- 								replies:[],
- 								selectedNums:[],
- 								twilioAut:'',
- 					   			twilioNum:'',
- 					   			twilioSID:''},
- 							   {type: 'SELECT_NUMBERS', numbers:['123']})
-			).toEqual({numbers:['123'],
-					   messages:[],
-					   replies:[],
-					   selectedNums:['123'],
-					   twilioAut:'',
- 					   twilioNum:'',
- 					   twilioSID:''})
+ 					   twilioSID:'',
+ 					   firstSent: true})
  		})
 
  		it('should be able to load settings', () => {
  			expect(Switchboard({numbers:[],
- 								messages:[],
- 								replies:[],
- 								selectedNums:[],
+ 								msgTree:[],
+ 								replies:{},
  								twilioAut:'',
  					   			twilioNum:'',
- 					   			twilioSID:''},
+ 					   			twilioSID:'',
+ 					   			firstSent: false},
  							   {type: 'LOAD_SETTINGS',
- 							   	contents:'{"numbers":["+614"],"messages":["Hello friend"],"selectedNums":[],"twilioSID":"AC","twilioAut":"46","twilioNum":"+61"}'})
-			).toEqual({numbers:['+614'],
-					   messages:['Hello friend'],
-					   replies:[],
-					   selectedNums:[],
+ 							   	contents:'{"numbers": {"+614": 0},"msgTree":[],"twilioSID":"AC","twilioAut":"46","twilioNum":"+61"}'})
+			).toEqual({numbers:Map({'+614':0}),
+					   msgTree:[],
+					   replies:{},
 					   twilioAut:'46',
  					   twilioNum:'+61',
- 					   twilioSID:'AC'})
+ 					   twilioSID:'AC',
+ 					   firstSent: false})
  		})
 
  		it('should be able to set twilio sid', () => {
  			expect(Switchboard({numbers:[],
- 							    messages:[],
- 							    replies:[],
- 							    selectedNums:[],
+ 							    msgTree:[],
+ 							    replies:{},
  								twilioAut:'',
  								twilioNum:'',
- 								twilioSID:''},
+ 								twilioSID:'',
+ 							    firstSent: false},
  							   {type: 'SET_TWILIOSID', twilioSID: 'ab'})
  			).toEqual({numbers:[],
- 					   messages:[],
- 					   replies:[],
- 					   selectedNums:[],
+ 					   msgTree:[],
+ 					   replies:{},
  					   twilioAut:'',
  					   twilioNum:'',
- 					   twilioSID:'ab'})
+ 					   twilioSID:'ab',
+ 					   firstSent: false})
  		})
 
  		it('should be able to set twilio aut', () => {
  			expect(Switchboard({numbers:[],
- 							    messages:[],
- 							    replies:[],
- 							    selectedNums:[],
+ 							    msgTree:[],
+ 							    replies:{},
  								twilioAut:'',
  								twilioNum:'',
- 								twilioSID:''},
+ 								twilioSID:'',
+ 							    firstSent: false},
  							   {type: 'SET_TWILIOAUT', twilioAut: 'ab'})
  			).toEqual({numbers:[],
- 					   messages:[],
- 					   replies:[],
- 					   selectedNums:[],
+ 					   msgTree:[],
+ 					   replies:{},
  					   twilioAut:'ab',
  					   twilioNum:'',
- 					   twilioSID:''})
+ 					   twilioSID:'',
+ 					   firstSent: false})
  		})
 
  		it('should be able to set twilio num', () => {
  			expect(Switchboard({numbers:[],
- 							    messages:[],
- 							    replies:[],
- 							    selectedNums:[],
+ 							    msgTree:[],
+ 							    replies:{},
  								twilioAut:'',
  								twilioNum:'',
- 								twilioSID:''},
+ 								twilioSID:'',
+ 							    firstSent: false},
  							   {type: 'SET_TWILIONUM', twilioNum: '12'})
  			).toEqual({numbers:[],
- 					   messages:[],
- 					   replies:[],
- 					   selectedNums:[],
+ 					   msgTree:[],
+ 					   replies:{},
  					   twilioAut:'',
  					   twilioNum:'12',
- 					   twilioSID:''})
+ 					   twilioSID:'',
+ 					   firstSent: false})
  		})
 
  		it('should be able to set the list of replies', () => {
  			expect(Switchboard({numbers:[],
- 							    messages:[],
- 							    replies:[],
+ 								msgTree:[],
+ 							    replies:{},
  							    selectedNums:[],
  								twilioAut:'',
  								twilioNum:'',
- 								twilioSID:''},
- 							   {type: 'SET_REPLIES', replies: ['12', '11']})
+ 								twilioSID:'',
+ 							    firstSent: false},
+ 							   {type: 'SET_REPLIES', replies: {"messages" : [{'sid':'a', 'text':'12'}, {'sid':'b', 'text':'12'}]}})
  			).toEqual({numbers:[],
- 					   messages:[],
- 					   replies:['12', '11'],
- 					   selectedNums:[],
+ 					   msgTree:[],
+ 					   replies:{'a': {'sid':'a', 'text':'12'}, 'b': {'sid':'b', 'text':'12'}},
  					   twilioAut:'',
  					   twilioNum:'',
- 					   twilioSID:''})
+ 					   twilioSID:'',
+ 					   firstSent: false})
  		})
 
  	})

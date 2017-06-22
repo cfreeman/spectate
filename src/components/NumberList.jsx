@@ -34,35 +34,22 @@ var NumberList = React.createClass({
     document.getElementById('PhoneNumber').value = "";
   },
 
-  handleSelect: function(event) {
-    const { store } = this.context;
-
-    var children = Array.from(event.target.childNodes);
-    var selected = children.filter(function(e) { return e.selected; })
-                           .map(function(e) { return e.value; });
-
-    store.dispatch({ type:'SELECT_NUMBERS',
-                     numbers: selected});
-  },
-
 	render: function() {
 		const { store } = this.context;
     var state = store.getState();
 
-    var n = state.numbers.map(function(nu) {
-       return <option key={nu} value={nu}>{nu}</option>;
+    var n = state.numbers.map(function(nu, k) {
+       return <option key={k} value={k}>{k}</option>;
     })
 
 		return (
-		  <div className="pure-u-5-24">
+		  <div className="pure-u-7-24">
+        <h2>Contacts: </h2>
         <fieldset className="pure-form">
-        <legend><b>Update contacts:</b></legend>
         <input id="PhoneNumber" type="text" placeholder="Phone number" onKeyPress={this.handleKeyPress}></input>
-        <button className="pure-button pure-button-primary" onClick={this.handleAddNumber}>Add</button>
+        <button className="pure-button pure-button-primary add" onClick={this.handleAddNumber}>Add</button>
         </fieldset>
-
-        <h2>2. Select contacts:</h2>
-        <select multiple className="numbers" style={{minWidth:"100%"},{height:"90%"}} onChange={this.handleSelect}>
+        <select multiple className="numbers" style={{minWidth:"100%"},{height:"90%"}}>
         { n }
         </select>
       </div>
