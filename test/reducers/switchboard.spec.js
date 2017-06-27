@@ -54,18 +54,19 @@
  					   firstSent: false})
  		})
 
-		it('should be set depth', () => {
+ 		it('should be able to set depth', () => {
  			expect(Switchboard({numbers:Map({'+5551':0}),
  								msgTree:[],
- 							    replies:{},
+ 							    replies:{'a': {'sid':'a', 'text':'12', 'replied': false}, 'b': {'sid':'b', 'text':'12', 'replied': false}},
+ 							    selectedNums:[],
  								twilioAut:'',
  								twilioNum:'',
  								twilioSID:'',
- 								firstSent: false},
- 							   {type: 'SET_DEPTH', number: '+5551', depth: 2})
+ 							    firstSent: false},
+ 							   {type: 'SET_DEPTH', number: '+5551', depth: 2, sid: 'a'})
  			).toEqual({numbers:Map({'+5551':2}),
  					   msgTree:[],
- 					   replies:{},
+ 					   replies:{'a': {'sid':'a', 'text':'12', 'replied': true}, 'b': {'sid':'b', 'text':'12', 'replied': false}},
  					   twilioAut:'',
  					   twilioNum:'',
  					   twilioSID:'',
@@ -175,7 +176,7 @@
  							   {type: 'SET_REPLIES', replies: {"messages" : [{'sid':'a', 'text':'12'}, {'sid':'b', 'text':'12'}]}})
  			).toEqual({numbers:[],
  					   msgTree:[],
- 					   replies:{'a': {'sid':'a', 'text':'12'}, 'b': {'sid':'b', 'text':'12'}},
+ 					   replies:{'a': {'sid':'a', 'text':'12', 'replied': false}, 'b': {'sid':'b', 'text':'12', 'replied': false}},
  					   twilioAut:'',
  					   twilioNum:'',
  					   twilioSID:'',

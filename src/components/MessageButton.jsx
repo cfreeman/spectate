@@ -37,6 +37,9 @@ var MessageButton = React.createClass({
     if (typeof this.props.number != 'undefined') {
       SendSMS(state.twilioSID, state.twilioAut, this.props.number, state.twilioNum, msg);
 
+      store.dispatch({type:'SET_DEPTH', sid: this.props.sid, number: this.props.number, depth: this.props.depth})
+
+
     // No number supplied via props - send to everyone.
     } else {
       state.numbers.map(function(v, n) {

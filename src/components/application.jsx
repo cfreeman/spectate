@@ -133,15 +133,17 @@ var Application = React.createClass({
     			<h1>SPECTATE Switchboard</h1>
       		<fieldset className="pure-form">
       		<TwilioSID /><TwilioAut /><TwilioNum />
+          <SaveButton /><LoadButton />
       		</fieldset>
-          <SaveButton />
-          <LoadButton />
+
     		</div>
     	</div>
     	<div className="pure-g">
       	<NumberList />
-        <MessageLog />
     	</div>
+      <div className="pure-g">
+        <MessageLog />
+      </div>
     	</div>
     )
 	}

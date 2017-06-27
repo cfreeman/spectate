@@ -43,15 +43,13 @@ var NumberList = React.createClass({
     })
 
 		return (
-		  <div className="pure-u-7-24">
+		  <div className="pure-u-1-1">
         <h2>Contacts: </h2>
         <fieldset className="pure-form">
         <input id="PhoneNumber" type="text" placeholder="Phone number" onKeyPress={this.handleKeyPress}></input>
         <button className="pure-button pure-button-primary add" onClick={this.handleAddNumber}>Add</button>
         </fieldset>
-        <select multiple className="numbers" style={{minWidth:"100%"},{height:"90%"}}>
-        { n }
-        </select>
+        <select multiple className="numbers">{ n }</select>
       </div>
     )
 	}

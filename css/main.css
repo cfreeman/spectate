@@ -16,18 +16,35 @@ fieldset {
 	border: 0px;
 	margin: 0px;
 	padding: 0px;
-	margin-top: 20px;
+	margin-top: 5px;
+    font-size: 12px;
+    font-family: consolas, monospace !important;
 }
 
-legend {
-	border-bottom: 0px !important;
+h1 {
+    font-family: consolas, monospace !important;
+    margin-bottom:0px;
+}
+
+h2 {
+    font-family: consolas, monospace !important;
+    font-size:20px;
+    margin-bottom:5px;
 }
 
 .add {
-    margin-left:11px;
+    margin-left: 5px;
 }
 
-#MessageField, #PhoneNumber, #twilioSID {
+.numbers {
+    width: 158px !important;
+    min-width: 158px !important;
+    margin-top: 10px;
+    font-size: 12px;
+    font-family: consolas, monospace !important;
+}
+
+#MessageField, #PhoneNumber, #twilioSID #twilioNum {
 	margin-right: 5px !important;
 }
 
@@ -48,8 +65,8 @@ legend {
     filter: alpha(opacity=0);
 }
 .log {
-    font-family: consolas, monospace;
-    font-size: 10px;
+    font-family: consolas, monospace !important;
+    font-size: 12px;
     margin-top: 3px;
     margin-bottom: 3px;
 }

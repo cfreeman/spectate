@@ -20,7 +20,7 @@
 
 import React from 'react';
 import { Map } from 'immutable';
-import MessageButton from './MessageList.jsx'
+import MessageButton from './MessageButton.jsx'
 
 var MessageLog = React.createClass({
 	render: function() {
@@ -32,24 +32,27 @@ var MessageLog = React.createClass({
     	var replies = [];
 
     	if (state.replies) {
-    		for (var id in state.replies) {
+    		for (var sid in state.replies) {
 	    		var direction = ['Sent', 'to'];
-	    		var dst = state.replies[id].to
+	    		var dst = state.replies[sid].to
 	    		var btns = ""
 
 	    		// Many of the operations only apply to inbound messages.
-	    		if (state.replies[id].direction == 'inbound') {
+	    		if (state.replies[sid].direction == 'inbound') {
 	    			direction = ['Recieved', 'from'];
-	    			dst = state.replies[id].from
+	    			dst = state.replies[sid].from
 
 	    			var pos = state.msgTree[state.numbers.get(dst)]
-	    			var btns = pos.children.map(function(id) {
-	    				return <MessageButton key={msg} number={dst} message={state.msgTree[id].text} />;
-	    			})
+
+	    			if (!state.replies[sid].replied) {
+	    				var btns = pos.children.map(function(id) {
+	    					return <MessageButton key={msg} number={dst} sid={sid} depth={id} message={state.msgTree[id].text} />;
+	    				})
+	    			}
 	    		}
 
 	    		replies.push(
-	    		<p className="log">{direction[0]} <b>'{state.replies[id].body}'</b> {direction[1]} {dst}. {btns}</p>);
+	    		<p className="log">{direction[0]} <b>'{state.replies[sid].body}'</b> {direction[1]} {dst}. {btns}</p>);
 	    	}
 	    }
 
@@ -60,7 +63,7 @@ var MessageLog = React.createClass({
 	    }
 
 		return (
-			<div className="pure-u-17-24">
+			<div className="pure-u-1-1">
 				<h2>Message Flow:</h2>
 				{ button }
 				{ replies }

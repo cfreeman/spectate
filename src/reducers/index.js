@@ -158,13 +158,21 @@ function Switchboard(state, action) {
  			};
 
     case 'SET_DEPTH':
+      var newList = {}
+      for (var i in state.replies) {
+        newList[i] = state.replies[i];
+        if (i == action.sid) {
+          newList[i].replied = true;
+        }
+      }
+
       return {
         numbers: state.numbers.set(action.number, action.depth),
         msgTree: state.msgTree,
         twilioSID: state.twilioSID,
         twilioAut: state.twilioAut,
         twilioNum: state.twilioNum,
-        replies: state.replies,
+        replies: newList,
         firstSent: state.firstSent
       };
 
@@ -176,6 +184,7 @@ function Switchboard(state, action) {
           newList[reply.sid] = state.replies[reply.sid];
         } else {
           newList[reply.sid] = reply;
+          newList[reply.sid].replied = false;
         }
       });
 
