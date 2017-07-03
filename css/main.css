@@ -64,9 +64,16 @@ h2 {
     opacity: 0;
     filter: alpha(opacity=0);
 }
+
 .log {
     font-family: consolas, monospace !important;
     font-size: 12px;
     margin-top: 3px;
     margin-bottom: 3px;
+    color: #999 !important;
 }
+
+.log b {
+    color:#000;
+}
+

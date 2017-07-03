@@ -29,6 +29,13 @@ var MessageLog = React.createClass({
 
     	console.log(state.replies);
 
+    	// Build a set of colors to identify each conversation.
+    	var seq = palette('tol-rainbow', state.numbers.size);
+    	var colorMap = state.numbers.mapEntries(function(e, i) {
+    		console.log(e[0]);
+    		return [e[0], "#"+seq[i]];
+    	});
+
     	var replies = [];
 
     	if (state.replies) {
@@ -52,7 +59,7 @@ var MessageLog = React.createClass({
 	    		}
 
 	    		replies.push(
-	    		<p className="log">{direction[0]} <b>'{state.replies[sid].body}'</b> {direction[1]} {dst}. {btns}</p>);
+	    		<p className="log"><b style={{color:colorMap.get(dst)}}>&#9608;&#9608;&#9608;</b> {direction[0]} <b>'{state.replies[sid].body}'</b> {direction[1]} {dst}. {btns}</p>);
 	    	}
 	    }
 
