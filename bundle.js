@@ -28000,12 +28000,12 @@ var MessageLog = _react2.default.createClass({
 
 		console.log(state.replies);
 
+		// Build a set of colors to identify each conversation.
 		var seq = palette('tol-rainbow', state.numbers.size);
 		var colorMap = state.numbers.mapEntries(function (e, i) {
 			console.log(e[0]);
 			return [e[0], "#" + seq[i]];
 		});
-		console;
 
 		var replies = [];
 
@@ -28028,9 +28028,6 @@ var MessageLog = _react2.default.createClass({
 						});
 					}
 				}
-
-				console.log(dst);
-				console.log(colorMap.get(dst));
 
 				replies.push(_react2.default.createElement(
 					'p',
@@ -28073,22 +28070,6 @@ var MessageLog = _react2.default.createClass({
 				'h2',
 				null,
 				'Message Flow:'
-			),
-			_react2.default.createElement(
-				'p',
-				{ className: 'log' },
-				_react2.default.createElement(
-					'b',
-					{ style: { color: "#462987" } },
-					'\u2588\u2588\u2588'
-				),
-				' Recieved ',
-				_react2.default.createElement(
-					'b',
-					null,
-					'\'a test\''
-				),
-				' from +61403315718.'
 			),
 			button,
 			replies
