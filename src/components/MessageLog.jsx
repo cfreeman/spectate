@@ -54,12 +54,14 @@ var MessageLog = React.createClass({
 	    				// Unknown number. Ignore message.
 	    				continue;
 	    			}
-	    			console.log(dst);
-	    			console.log(state.numbers.get(dst));
-	    			console.log(pos);
 
 	    			if (!state.replies[sid].replied) {
 	    				var btns = pos.children.map(function(id) {
+	    					if (state.msgTree[id] === undefined) {
+	    						console.log("Unable to find Message: " + id);
+	    						return;
+	    					}
+
 	    					return <MessageButton key={msg} number={dst} sid={sid} depth={id} message={state.msgTree[id].text} />;
 	    				})
 	    			}

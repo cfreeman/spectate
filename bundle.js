@@ -28025,12 +28025,14 @@ var MessageLog = _react2.default.createClass({
 						// Unknown number. Ignore message.
 						continue;
 					}
-					console.log(dst);
-					console.log(state.numbers.get(dst));
-					console.log(pos);
 
 					if (!state.replies[sid].replied) {
 						var btns = pos.children.map(function (id) {
+							if (state.msgTree[id] === undefined) {
+								console.log("Unable to find Message: " + id);
+								return;
+							}
+
 							return _react2.default.createElement(_MessageButton2.default, { key: msg, number: dst, sid: sid, depth: id, message: state.msgTree[id].text });
 						});
 					}
