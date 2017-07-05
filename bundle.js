@@ -28021,6 +28021,13 @@ var MessageLog = _react2.default.createClass({
 					dst = state.replies[sid].from;
 
 					var pos = state.msgTree[state.numbers.get(dst)];
+					if (pos === undefined) {
+						// Unknown number. Ignore message.
+						continue;
+					}
+					console.log(dst);
+					console.log(state.numbers.get(dst));
+					console.log(pos);
 
 					if (!state.replies[sid].replied) {
 						var btns = pos.children.map(function (id) {

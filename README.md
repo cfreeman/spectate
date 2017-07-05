@@ -8,6 +8,8 @@
 * ~~message bold intensity.~~
 * ~~Deploy online.~~
 
+* Test navigation of message tree.
+
 * Message pagination?
 * Freeform texts.
 * Excel form thing and data-back and forth.
