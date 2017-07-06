@@ -28,7 +28,8 @@ const initialState = {
   twilioAut:'',
   twilioNum:'',
   replies:{},
-  firstSent: false
+  firstSent: false,
+  started: null
 }
 
 // GetSMS gets all the SMS messages that have been sent to dstNum in the twilio account identified by
@@ -84,6 +85,8 @@ function SendSMS(twilioSID, twilioAuth, dstNum, srcNum, msg) {
 // Switchboard updates the state of the application by applying the supplied action.
 function Switchboard(state, action) {
  	if (state === undefined) {
+    var i = initialState;
+    i.started = Date.now();
  		return initialState;
  	}
 
@@ -96,7 +99,8 @@ function Switchboard(state, action) {
  				twilioAut: state.twilioAut,
  				twilioNum: state.twilioNum,
         replies: state.replies,
-        firstSent: state.firstSent
+        firstSent: state.firstSent,
+        started: state.started
  			};
 
     case 'FIRST_SENT':
@@ -107,8 +111,8 @@ function Switchboard(state, action) {
         twilioAut: state.twilioAut,
         twilioNum: state.twilioNum,
         replies: state.replies,
-        firstSent: true
-
+        firstSent: true,
+        started: state.started
       };
 
  		case 'LOAD_SETTINGS':
@@ -121,7 +125,8 @@ function Switchboard(state, action) {
  				twilioAut: data.twilioAut,
  				twilioNum: data.twilioNum,
         replies: state.replies,
-        firstSent: state.firstSent
+        firstSent: state.firstSent,
+        started: state.started
  			};
 
  		case 'SET_TWILIOSID':
@@ -132,7 +137,8 @@ function Switchboard(state, action) {
  				twilioAut: state.twilioAut,
  				twilioNum: state.twilioNum,
         replies: state.replies,
-        firstSent: state.firstSent
+        firstSent: state.firstSent,
+        started: state.started
  			};
 
  		case 'SET_TWILIOAUT':
@@ -143,7 +149,8 @@ function Switchboard(state, action) {
  				twilioAut: action.twilioAut,
  				twilioNum: state.twilioNum,
         replies: state.replies,
-        firstSent: state.firstSent
+        firstSent: state.firstSent,
+        started: state.started
  			};
 
  		case 'SET_TWILIONUM':
@@ -154,7 +161,8 @@ function Switchboard(state, action) {
  				twilioAut: state.twilioAut,
  				twilioNum: action.twilioNum,
         replies: state.replies,
-        firstSent: state.firstSent
+        firstSent: state.firstSent,
+        started: state.started
  			};
 
     case 'SET_DEPTH':
@@ -173,7 +181,8 @@ function Switchboard(state, action) {
         twilioAut: state.twilioAut,
         twilioNum: state.twilioNum,
         replies: newList,
-        firstSent: state.firstSent
+        firstSent: state.firstSent,
+        started: state.started
       };
 
     case 'SET_REPLIES':
@@ -195,7 +204,8 @@ function Switchboard(state, action) {
         twilioAut: state.twilioAut,
         twilioNum: state.twilioNum,
         replies: newList,
-        firstSent: state.firstSent
+        firstSent: state.firstSent,
+        started: state.started
       };
 
  		default:

@@ -42,6 +42,7 @@
     "mocha": "^3.0.0",
     "react-addons-test-utils": "^15.3.2",
     "redux-devtools": "^3.3.1",
-    "redux-mock-store": "^1.2.0"
+    "redux-mock-store": "^1.2.0",
+    "timekeeper": "^1.0.0"
   }
 }
