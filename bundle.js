@@ -28007,13 +28007,15 @@ var MessageLog = _react2.default.createClass({
       return [e[0], "#" + seq[i]];
     });
 
+    // Filter out all messages that were sent before the page loaded.
     var valid = state.replies.filter(function (v, k, i) {
-      console.log();
-      console.log(Date.parse(v.date_sent));
-      console.log(state.started);
-      console.log(Date.parse(v.date_sent) > state.started);
-
       return Date.parse(v.date_sent) > state.started;
+    });
+
+    // Filter out all outbound messages that originate from a different
+    // number.
+    valid = valid.filter(function (v, k, i) {
+      return v.direction == 'outbound-api' && v.from == state.twilioNum;
     });
 
     console.log(valid);

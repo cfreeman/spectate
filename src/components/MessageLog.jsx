@@ -23,76 +23,84 @@ import { Map } from 'immutable';
 import MessageButton from './MessageButton.jsx'
 
 var MessageLog = React.createClass({
-	render: function() {
-		const { store } = this.context;
-    	var state = store.getState();
+    render: function() {
+        const { store } = this.context;
+        var state = store.getState();
 
-    	console.log(state.replies);
+        console.log(state.replies);
 
-    	// Build a set of colors to identify each conversation.
-    	var seq = palette('tol-rainbow', state.numbers.size);
-    	var colorMap = state.numbers.mapEntries(function(e, i) {
-    		console.log(e[0]);
-    		return [e[0], "#"+seq[i]];
-    	});
+        // Build a set of colors to identify each conversation.
+        var seq = palette('tol-rainbow', state.numbers.size);
+        var colorMap = state.numbers.mapEntries(function(e, i) {
+            console.log(e[0]);
+            return [e[0], "#"+seq[i]];
+        });
 
-    	// Filter out all messages that were sent before the page loaded.
-    	var valid = state.replies.filter(function(v, k, i) {
-    		return Date.parse(v.date_sent) > state.started;
-    	})
+        // Filter out all messages that were sent before the page loaded.
+        var valid = state.replies.filter(function(v, k, i) {
+            return Date.parse(v.date_sent) > state.started;
+        })
 
-    	var replies = [];
+        // Filter out all outbound messages that originate from a different
+        // number.
+        valid = valid.filter(function(v, k, i) {
+            return (v.direction == 'outbound-api' && v.from == state.twilioNum);
+        })
 
-    	valid.map(function(reply) {
-    		var direction = ['Sent', 'to'];
-    		var dst = reply.to;
-    		var btns = "";
+        console.log(valid);
 
-    		// Many of the operations only apply to inbound messages.
-    		if (reply.direction == 'inbound') {
-    			direction = ['Recieved', 'from'];
-    			dst = reply.from
+        var replies = [];
 
-    			var pos = state.msgTree[state.numbers.get(dst)]
-    			if (pos === undefined) {
-    				// Unknown number. Ignore message.
-    				return;
-    			}
+        valid.map(function(reply) {
+            var direction = ['Sent', 'to'];
+            var dst = reply.to;
+            var btns = "";
 
-    			if (!reply.replied) {
-    				var btns = pos.children.map(function(id) {
-    					if (state.msgTree[id] === undefined) {
-    						console.log("Unable to find Message: " + id);
-    						return;
-    					}
+            // Many of the operations only apply to inbound messages.
+            if (reply.direction == 'inbound') {
+                direction = ['Recieved', 'from'];
+                dst = reply.from
 
-    					return <MessageButton key={msg} number={dst} sid={reply.sid} depth={id} message={state.msgTree[id].text} />;
-    				})
-    			}
-    		}
+                var pos = state.msgTree[state.numbers.get(dst)]
+                if (pos === undefined) {
+                    // Unknown number. Ignore message.
+                    return;
+                }
 
-    		replies.push(
-    		<p className="log"><b style={{color:colorMap.get(dst)}}>&#9608;&#9608;&#9608;</b> {direction[0]} <b>'{reply.body}'</b> {direction[1]} {dst}. {btns}</p>);
+                if (!reply.replied) {
+                    var btns = pos.children.map(function(id) {
+                        if (state.msgTree[id] === undefined) {
+                            console.log("Unable to find Message: " + id);
+                            return;
+                        }
 
-	    })
+                        return <MessageButton key={msg} number={dst} sid={reply.sid} depth={id} message={state.msgTree[id].text} />;
+                    })
+                }
+            }
 
-	    var button = null
-	    if (state.msgTree.length != 0) {
-	    	var msg = state.msgTree[0].text;
-    		button = <MessageButton key={msg} message={msg} first={state.firstSent} />
-	    }
+            replies.push(
+            <p className="log"><b style={{color:colorMap.get(dst)}}>&#9608;&#9608;&#9608;</b> {direction[0]} <b>'{reply.body}'</b> {direction[1]} {dst}. {btns}</p>);
 
-		return (
-			<div className="pure-u-1-1">
-				<h2>Message Flow:</h2>
-				{ button }
-				{ replies }
-			</div>
-		)
-	}
+        })
+
+        var button = null
+        if (state.msgTree.length != 0) {
+            var msg = state.msgTree[0].text;
+            button = <MessageButton key={msg} message={msg} first={state.firstSent} />
+        }
+
+        return (
+            <div className="pure-u-1-1">
+                <h2>Message Flow:</h2>
+                { button }
+                { replies }
+            </div>
+        )
+    }
 })
 MessageLog.contextTypes = {
-	store: React.PropTypes.object
+    store: React.PropTypes.object
 };
 
 export default MessageLog

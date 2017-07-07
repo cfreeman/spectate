@@ -9,6 +9,7 @@
 * ~~Deploy online.~~
 * ~~messages from people who reached the end of their path?~~
 * ~~Can now run multiple performances in a day.~~
+* ~~Messages sent from other tabs / operators don't appear in your tab.~~
 
 * Test navigation of message tree.
 
