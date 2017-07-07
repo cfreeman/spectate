@@ -27,7 +27,7 @@ const initialState = {
   twilioSID:'',
   twilioAut:'',
   twilioNum:'',
-  replies:{},
+  replies:Map({}),
   firstSent: false,
   started: null
 }
@@ -186,14 +186,14 @@ function Switchboard(state, action) {
       };
 
     case 'SET_REPLIES':
-      var newList = {};
+      var newList = Map({});
 
       action.replies.messages.map(function(reply) {
-        if (reply.sid in state.replies) {
-          newList[reply.sid] = state.replies[reply.sid];
+        if (state.replies.has(reply.sid)) {
+          newList = newList.set(reply.sid, state.replies.get(reply.sid));
         } else {
-          newList[reply.sid] = reply;
-          newList[reply.sid].replied = false;
+          reply.replied = false;
+          newList = newList.set(reply.sid, reply);
         }
       });
 

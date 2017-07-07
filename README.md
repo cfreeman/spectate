@@ -7,6 +7,8 @@
 * ~~colours for conversations.~~
 * ~~message bold intensity.~~
 * ~~Deploy online.~~
+* ~~messages from people who reached the end of their path?~~
+* ~~Can now run multiple performances in a day.~~
 
 * Test navigation of message tree.
 
@@ -17,7 +19,7 @@
 * pre-performance test button.
 * group multiple replies to one reply message button.
 * disable screen scrolling automatically when messages come in.
-* still recieve messages from people who reached the end of their path?
+
 
 
 

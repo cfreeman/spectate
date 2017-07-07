@@ -40,7 +40,7 @@ describe('reducers', () => {
                 Switchboard(undefined, {})
             ).toEqual({numbers:Map({}),
                        msgTree:[],
-                       replies:{},
+                       replies:Map({}),
                        twilioAut:'',
                        twilioNum:'',
                        twilioSID:'',
@@ -51,7 +51,7 @@ describe('reducers', () => {
         it('should be able to add a number', () => {
             expect(Switchboard({numbers:Map({}),
                                 msgTree:[],
-                                replies:{},
+                                replies:Map({}),
                                 twilioAut:'',
                                 twilioNum:'',
                                 twilioSID:'',
@@ -60,7 +60,7 @@ describe('reducers', () => {
                                {type: 'ADD_NUMBER', number: '+5551'})
             ).toEqual({numbers:Map({'+5551':0}),
                        msgTree:[],
-                       replies:{},
+                       replies:Map({}),
                        twilioAut:'',
                        twilioNum:'',
                        twilioSID:'',
@@ -92,7 +92,7 @@ describe('reducers', () => {
         it('should be able to mark first sent', () => {
             expect(Switchboard({numbers:[],
                                 msgTree:[],
-                                replies:{},
+                                replies:Map({}),
                                 twilioAut:'',
                                 twilioNum:'',
                                 twilioSID:'',
@@ -101,7 +101,7 @@ describe('reducers', () => {
                                {type: 'FIRST_SENT'})
             ).toEqual({numbers:[],
                        msgTree:[],
-                       replies:{},
+                       replies:Map({}),
                        twilioAut:'',
                        twilioNum:'',
                        twilioSID:'',
@@ -112,7 +112,7 @@ describe('reducers', () => {
         it('should be able to load settings', () => {
             expect(Switchboard({numbers:[],
                                 msgTree:[],
-                                replies:{},
+                                replies:Map({}),
                                 twilioAut:'',
                                 twilioNum:'',
                                 twilioSID:'',
@@ -122,7 +122,7 @@ describe('reducers', () => {
                                 contents:'{"numbers": {"+614": 0},"msgTree":[],"twilioSID":"AC","twilioAut":"46","twilioNum":"+61"}'})
             ).toEqual({numbers:Map({'+614':0}),
                        msgTree:[],
-                       replies:{},
+                       replies:Map({}),
                        twilioAut:'46',
                        twilioNum:'+61',
                        twilioSID:'AC',
@@ -133,7 +133,7 @@ describe('reducers', () => {
         it('should be able to set twilio sid', () => {
             expect(Switchboard({numbers:[],
                                 msgTree:[],
-                                replies:{},
+                                replies:Map({}),
                                 twilioAut:'',
                                 twilioNum:'',
                                 twilioSID:'',
@@ -142,7 +142,7 @@ describe('reducers', () => {
                                {type: 'SET_TWILIOSID', twilioSID: 'ab'})
             ).toEqual({numbers:[],
                        msgTree:[],
-                       replies:{},
+                       replies:Map({}),
                        twilioAut:'',
                        twilioNum:'',
                        twilioSID:'ab',
@@ -153,7 +153,7 @@ describe('reducers', () => {
         it('should be able to set twilio aut', () => {
             expect(Switchboard({numbers:[],
                                 msgTree:[],
-                                replies:{},
+                                replies:Map({}),
                                 twilioAut:'',
                                 twilioNum:'',
                                 twilioSID:'',
@@ -162,7 +162,7 @@ describe('reducers', () => {
                                {type: 'SET_TWILIOAUT', twilioAut: 'ab'})
             ).toEqual({numbers:[],
                        msgTree:[],
-                       replies:{},
+                       replies:Map({}),
                        twilioAut:'ab',
                        twilioNum:'',
                        twilioSID:'',
@@ -173,7 +173,7 @@ describe('reducers', () => {
         it('should be able to set twilio num', () => {
             expect(Switchboard({numbers:[],
                                 msgTree:[],
-                                replies:{},
+                                replies:Map({}),
                                 twilioAut:'',
                                 twilioNum:'',
                                 twilioSID:'',
@@ -182,7 +182,7 @@ describe('reducers', () => {
                                {type: 'SET_TWILIONUM', twilioNum: '12'})
             ).toEqual({numbers:[],
                        msgTree:[],
-                       replies:{},
+                       replies:Map({}),
                        twilioAut:'',
                        twilioNum:'12',
                        twilioSID:'',
@@ -193,7 +193,7 @@ describe('reducers', () => {
         it('should be able to set the list of replies', () => {
             expect(Switchboard({numbers:[],
                                 msgTree:[],
-                                replies:{},
+                                replies:Map({}),
                                 selectedNums:[],
                                 twilioAut:'',
                                 twilioNum:'',
@@ -203,7 +203,7 @@ describe('reducers', () => {
                                {type: 'SET_REPLIES', replies: {"messages" : [{'sid':'a', 'text':'12'}, {'sid':'b', 'text':'12'}]}})
             ).toEqual({numbers:[],
                        msgTree:[],
-                       replies:{'a': {'sid':'a', 'text':'12', 'replied': false}, 'b': {'sid':'b', 'text':'12', 'replied': false}},
+                       replies:Map({'a': {'sid':'a', 'text':'12', 'replied': false}, 'b': {'sid':'b', 'text':'12', 'replied': false}}),
                        twilioAut:'',
                        twilioNum:'',
                        twilioSID:'',

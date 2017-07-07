@@ -27975,7 +27975,7 @@ exports.default = MessageButton;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 
 var _react = require('react');
@@ -27991,102 +27991,111 @@ var _MessageButton2 = _interopRequireDefault(_MessageButton);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var MessageLog = _react2.default.createClass({
-	displayName: 'MessageLog',
+  displayName: 'MessageLog',
 
-	render: function render() {
-		var store = this.context.store;
+  render: function render() {
+    var store = this.context.store;
 
-		var state = store.getState();
+    var state = store.getState();
 
-		console.log(state.replies);
+    console.log(state.replies);
 
-		// Build a set of colors to identify each conversation.
-		var seq = palette('tol-rainbow', state.numbers.size);
-		var colorMap = state.numbers.mapEntries(function (e, i) {
-			console.log(e[0]);
-			return [e[0], "#" + seq[i]];
-		});
+    // Build a set of colors to identify each conversation.
+    var seq = palette('tol-rainbow', state.numbers.size);
+    var colorMap = state.numbers.mapEntries(function (e, i) {
+      console.log(e[0]);
+      return [e[0], "#" + seq[i]];
+    });
 
-		var replies = [];
+    var valid = state.replies.filter(function (v, k, i) {
+      console.log();
+      console.log(Date.parse(v.date_sent));
+      console.log(state.started);
+      console.log(Date.parse(v.date_sent) > state.started);
 
-		if (state.replies) {
-			for (var sid in state.replies) {
-				var direction = ['Sent', 'to'];
-				var dst = state.replies[sid].to;
-				var btns = "";
+      return Date.parse(v.date_sent) > state.started;
+    });
 
-				// Many of the operations only apply to inbound messages.
-				if (state.replies[sid].direction == 'inbound') {
-					direction = ['Recieved', 'from'];
-					dst = state.replies[sid].from;
+    console.log(valid);
 
-					var pos = state.msgTree[state.numbers.get(dst)];
-					if (pos === undefined) {
-						// Unknown number. Ignore message.
-						continue;
-					}
+    var replies = [];
 
-					if (!state.replies[sid].replied) {
-						var btns = pos.children.map(function (id) {
-							if (state.msgTree[id] === undefined) {
-								console.log("Unable to find Message: " + id);
-								return;
-							}
+    valid.map(function (reply) {
+      var direction = ['Sent', 'to'];
+      var dst = reply.to;
+      var btns = "";
 
-							return _react2.default.createElement(_MessageButton2.default, { key: msg, number: dst, sid: sid, depth: id, message: state.msgTree[id].text });
-						});
-					}
-				}
+      // Many of the operations only apply to inbound messages.
+      if (reply.direction == 'inbound') {
+        direction = ['Recieved', 'from'];
+        dst = reply.from;
 
-				replies.push(_react2.default.createElement(
-					'p',
-					{ className: 'log' },
-					_react2.default.createElement(
-						'b',
-						{ style: { color: colorMap.get(dst) } },
-						'\u2588\u2588\u2588'
-					),
-					' ',
-					direction[0],
-					' ',
-					_react2.default.createElement(
-						'b',
-						null,
-						'\'',
-						state.replies[sid].body,
-						'\''
-					),
-					' ',
-					direction[1],
-					' ',
-					dst,
-					'. ',
-					btns
-				));
-			}
-		}
+        var pos = state.msgTree[state.numbers.get(dst)];
+        if (pos === undefined) {
+          // Unknown number. Ignore message.
+          return;
+        }
 
-		var button = null;
-		if (state.msgTree.length != 0) {
-			var msg = state.msgTree[0].text;
-			button = _react2.default.createElement(_MessageButton2.default, { key: msg, message: msg, first: state.firstSent });
-		}
+        if (!reply.replied) {
+          var btns = pos.children.map(function (id) {
+            if (state.msgTree[id] === undefined) {
+              console.log("Unable to find Message: " + id);
+              return;
+            }
 
-		return _react2.default.createElement(
-			'div',
-			{ className: 'pure-u-1-1' },
-			_react2.default.createElement(
-				'h2',
-				null,
-				'Message Flow:'
-			),
-			button,
-			replies
-		);
-	}
+            return _react2.default.createElement(_MessageButton2.default, { key: msg, number: dst, sid: reply.sid, depth: id, message: state.msgTree[id].text });
+          });
+        }
+      }
+
+      replies.push(_react2.default.createElement(
+        'p',
+        { className: 'log' },
+        _react2.default.createElement(
+          'b',
+          { style: { color: colorMap.get(dst) } },
+          '\u2588\u2588\u2588'
+        ),
+        ' ',
+        direction[0],
+        ' ',
+        _react2.default.createElement(
+          'b',
+          null,
+          '\'',
+          reply.body,
+          '\''
+        ),
+        ' ',
+        direction[1],
+        ' ',
+        dst,
+        '. ',
+        btns
+      ));
+    });
+
+    var button = null;
+    if (state.msgTree.length != 0) {
+      var msg = state.msgTree[0].text;
+      button = _react2.default.createElement(_MessageButton2.default, { key: msg, message: msg, first: state.firstSent });
+    }
+
+    return _react2.default.createElement(
+      'div',
+      { className: 'pure-u-1-1' },
+      _react2.default.createElement(
+        'h2',
+        null,
+        'Message Flow:'
+      ),
+      button,
+      replies
+    );
+  }
 });
 MessageLog.contextTypes = {
-	store: _react2.default.PropTypes.object
+  store: _react2.default.PropTypes.object
 };
 
 exports.default = MessageLog;
@@ -28568,7 +28577,7 @@ var initialState = {
   twilioSID: '',
   twilioAut: '',
   twilioNum: '',
-  replies: {},
+  replies: (0, _immutable.Map)({}),
   firstSent: false,
   started: null
 };
@@ -28723,14 +28732,14 @@ function Switchboard(state, action) {
       };
 
     case 'SET_REPLIES':
-      var newList = {};
+      var newList = (0, _immutable.Map)({});
 
       action.replies.messages.map(function (reply) {
-        if (reply.sid in state.replies) {
-          newList[reply.sid] = state.replies[reply.sid];
+        if (state.replies.has(reply.sid)) {
+          newList = newList.set(reply.sid, state.replies.get(reply.sid));
         } else {
-          newList[reply.sid] = reply;
-          newList[reply.sid].replied = false;
+          reply.replied = false;
+          newList = newList.set(reply.sid, reply);
         }
       });
 

@@ -36,41 +36,45 @@ var MessageLog = React.createClass({
     		return [e[0], "#"+seq[i]];
     	});
 
+    	// Filter out all messages that were sent before the page loaded.
+    	var valid = state.replies.filter(function(v, k, i) {
+    		return Date.parse(v.date_sent) > state.started;
+    	})
+
     	var replies = [];
 
-    	if (state.replies) {
-    		for (var sid in state.replies) {
-	    		var direction = ['Sent', 'to'];
-	    		var dst = state.replies[sid].to
-	    		var btns = ""
+    	valid.map(function(reply) {
+    		var direction = ['Sent', 'to'];
+    		var dst = reply.to;
+    		var btns = "";
 
-	    		// Many of the operations only apply to inbound messages.
-	    		if (state.replies[sid].direction == 'inbound') {
-	    			direction = ['Recieved', 'from'];
-	    			dst = state.replies[sid].from
+    		// Many of the operations only apply to inbound messages.
+    		if (reply.direction == 'inbound') {
+    			direction = ['Recieved', 'from'];
+    			dst = reply.from
 
-	    			var pos = state.msgTree[state.numbers.get(dst)]
-	    			if (pos === undefined) {
-	    				// Unknown number. Ignore message.
-	    				continue;
-	    			}
+    			var pos = state.msgTree[state.numbers.get(dst)]
+    			if (pos === undefined) {
+    				// Unknown number. Ignore message.
+    				return;
+    			}
 
-	    			if (!state.replies[sid].replied) {
-	    				var btns = pos.children.map(function(id) {
-	    					if (state.msgTree[id] === undefined) {
-	    						console.log("Unable to find Message: " + id);
-	    						return;
-	    					}
+    			if (!reply.replied) {
+    				var btns = pos.children.map(function(id) {
+    					if (state.msgTree[id] === undefined) {
+    						console.log("Unable to find Message: " + id);
+    						return;
+    					}
 
-	    					return <MessageButton key={msg} number={dst} sid={sid} depth={id} message={state.msgTree[id].text} />;
-	    				})
-	    			}
-	    		}
+    					return <MessageButton key={msg} number={dst} sid={reply.sid} depth={id} message={state.msgTree[id].text} />;
+    				})
+    			}
+    		}
 
-	    		replies.push(
-	    		<p className="log"><b style={{color:colorMap.get(dst)}}>&#9608;&#9608;&#9608;</b> {direction[0]} <b>'{state.replies[sid].body}'</b> {direction[1]} {dst}. {btns}</p>);
-	    	}
-	    }
+    		replies.push(
+    		<p className="log"><b style={{color:colorMap.get(dst)}}>&#9608;&#9608;&#9608;</b> {direction[0]} <b>'{reply.body}'</b> {direction[1]} {dst}. {btns}</p>);
+
+	    })
 
 	    var button = null
 	    if (state.msgTree.length != 0) {
