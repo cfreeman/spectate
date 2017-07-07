@@ -39,13 +39,12 @@ var MessageLog = React.createClass({
         // Filter out all messages that were sent before the page loaded.
         var valid = state.replies.filter(function(v, k, i) {
             return Date.parse(v.date_sent) > state.started;
-        })
+        });
 
-        // Filter out all outbound messages that originate from a different
-        // number.
-        valid = valid.filter(function(v, k, i) {
-            return (v.direction == 'outbound-api' && v.from == state.twilioNum);
-        })
+        // Filter outbound messages that come from a different number.
+        valid = valid.filterNot(function(v, k, i) {
+             return (v.direction == 'outbound-api' && v.from != state.twilioNum);
+        });
 
         console.log(valid);
 
@@ -84,6 +83,7 @@ var MessageLog = React.createClass({
 
         })
 
+        // Display the initial button for starting the performance.
         var button = null
         if (state.msgTree.length != 0) {
             var msg = state.msgTree[0].text;

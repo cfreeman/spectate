@@ -27975,7 +27975,7 @@ exports.default = MessageButton;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _react = require('react');
@@ -27991,113 +27991,113 @@ var _MessageButton2 = _interopRequireDefault(_MessageButton);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var MessageLog = _react2.default.createClass({
-  displayName: 'MessageLog',
+    displayName: 'MessageLog',
 
-  render: function render() {
-    var store = this.context.store;
+    render: function render() {
+        var store = this.context.store;
 
-    var state = store.getState();
+        var state = store.getState();
 
-    console.log(state.replies);
+        console.log(state.replies);
 
-    // Build a set of colors to identify each conversation.
-    var seq = palette('tol-rainbow', state.numbers.size);
-    var colorMap = state.numbers.mapEntries(function (e, i) {
-      console.log(e[0]);
-      return [e[0], "#" + seq[i]];
-    });
+        // Build a set of colors to identify each conversation.
+        var seq = palette('tol-rainbow', state.numbers.size);
+        var colorMap = state.numbers.mapEntries(function (e, i) {
+            console.log(e[0]);
+            return [e[0], "#" + seq[i]];
+        });
 
-    // Filter out all messages that were sent before the page loaded.
-    var valid = state.replies.filter(function (v, k, i) {
-      return Date.parse(v.date_sent) > state.started;
-    });
+        // Filter out all messages that were sent before the page loaded.
+        var valid = state.replies.filter(function (v, k, i) {
+            return Date.parse(v.date_sent) > state.started;
+        });
 
-    // Filter out all outbound messages that originate from a different
-    // number.
-    valid = valid.filter(function (v, k, i) {
-      return v.direction == 'outbound-api' && v.from == state.twilioNum;
-    });
+        // Filter outbound messages that come from a different number.
+        valid = valid.filterNot(function (v, k, i) {
+            return v.direction == 'outbound-api' && v.from != state.twilioNum;
+        });
 
-    console.log(valid);
+        console.log(valid);
 
-    var replies = [];
+        var replies = [];
 
-    valid.map(function (reply) {
-      var direction = ['Sent', 'to'];
-      var dst = reply.to;
-      var btns = "";
+        valid.map(function (reply) {
+            var direction = ['Sent', 'to'];
+            var dst = reply.to;
+            var btns = "";
 
-      // Many of the operations only apply to inbound messages.
-      if (reply.direction == 'inbound') {
-        direction = ['Recieved', 'from'];
-        dst = reply.from;
+            // Many of the operations only apply to inbound messages.
+            if (reply.direction == 'inbound') {
+                direction = ['Recieved', 'from'];
+                dst = reply.from;
 
-        var pos = state.msgTree[state.numbers.get(dst)];
-        if (pos === undefined) {
-          // Unknown number. Ignore message.
-          return;
-        }
+                var pos = state.msgTree[state.numbers.get(dst)];
+                if (pos === undefined) {
+                    // Unknown number. Ignore message.
+                    return;
+                }
 
-        if (!reply.replied) {
-          var btns = pos.children.map(function (id) {
-            if (state.msgTree[id] === undefined) {
-              console.log("Unable to find Message: " + id);
-              return;
+                if (!reply.replied) {
+                    var btns = pos.children.map(function (id) {
+                        if (state.msgTree[id] === undefined) {
+                            console.log("Unable to find Message: " + id);
+                            return;
+                        }
+
+                        return _react2.default.createElement(_MessageButton2.default, { key: msg, number: dst, sid: reply.sid, depth: id, message: state.msgTree[id].text });
+                    });
+                }
             }
 
-            return _react2.default.createElement(_MessageButton2.default, { key: msg, number: dst, sid: reply.sid, depth: id, message: state.msgTree[id].text });
-          });
+            replies.push(_react2.default.createElement(
+                'p',
+                { className: 'log' },
+                _react2.default.createElement(
+                    'b',
+                    { style: { color: colorMap.get(dst) } },
+                    '\u2588\u2588\u2588'
+                ),
+                ' ',
+                direction[0],
+                ' ',
+                _react2.default.createElement(
+                    'b',
+                    null,
+                    '\'',
+                    reply.body,
+                    '\''
+                ),
+                ' ',
+                direction[1],
+                ' ',
+                dst,
+                '. ',
+                btns
+            ));
+        });
+
+        // Display the initial button for starting the performance.
+        var button = null;
+        if (state.msgTree.length != 0) {
+            var msg = state.msgTree[0].text;
+            button = _react2.default.createElement(_MessageButton2.default, { key: msg, message: msg, first: state.firstSent });
         }
-      }
 
-      replies.push(_react2.default.createElement(
-        'p',
-        { className: 'log' },
-        _react2.default.createElement(
-          'b',
-          { style: { color: colorMap.get(dst) } },
-          '\u2588\u2588\u2588'
-        ),
-        ' ',
-        direction[0],
-        ' ',
-        _react2.default.createElement(
-          'b',
-          null,
-          '\'',
-          reply.body,
-          '\''
-        ),
-        ' ',
-        direction[1],
-        ' ',
-        dst,
-        '. ',
-        btns
-      ));
-    });
-
-    var button = null;
-    if (state.msgTree.length != 0) {
-      var msg = state.msgTree[0].text;
-      button = _react2.default.createElement(_MessageButton2.default, { key: msg, message: msg, first: state.firstSent });
+        return _react2.default.createElement(
+            'div',
+            { className: 'pure-u-1-1' },
+            _react2.default.createElement(
+                'h2',
+                null,
+                'Message Flow:'
+            ),
+            button,
+            replies
+        );
     }
-
-    return _react2.default.createElement(
-      'div',
-      { className: 'pure-u-1-1' },
-      _react2.default.createElement(
-        'h2',
-        null,
-        'Message Flow:'
-      ),
-      button,
-      replies
-    );
-  }
 });
 MessageLog.contextTypes = {
-  store: _react2.default.PropTypes.object
+    store: _react2.default.PropTypes.object
 };
 
 exports.default = MessageLog;
@@ -28714,13 +28714,8 @@ function Switchboard(state, action) {
       };
 
     case 'SET_DEPTH':
-      var newList = {};
-      for (var i in state.replies) {
-        newList[i] = state.replies[i];
-        if (i == action.sid) {
-          newList[i].replied = true;
-        }
-      }
+      var reply = state.replies.get(action.sid);
+      reply.replied = true;
 
       return {
         numbers: state.numbers.set(action.number, action.depth),
@@ -28728,7 +28723,7 @@ function Switchboard(state, action) {
         twilioSID: state.twilioSID,
         twilioAut: state.twilioAut,
         twilioNum: state.twilioNum,
-        replies: newList,
+        replies: state.replies.set(action.sid, reply),
         firstSent: state.firstSent,
         started: state.started
       };
