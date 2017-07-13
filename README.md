@@ -10,17 +10,12 @@
 * ~~messages from people who reached the end of their path?~~
 * ~~Can now run multiple performances in a day.~~
 * ~~Messages sent from other tabs / operators don't appear in your tab.~~
+* ~~Test navigation of message tree.~~
+* ~~group multiple replies to one reply message button.~~
 
-* Test navigation of message tree.
-
+* Data-back and forth for handling phone numbers.
 * Message pagination?
 * Freeform texts.
-* Excel form thing and data-back and forth.
+* disable screen from scrolling automatically when messages come in.
 * add three twilio number.
 * pre-performance test button.
-* group multiple replies to one reply message button.
-* disable screen scrolling automatically when messages come in.
-
-
-
-

@@ -166,8 +166,12 @@ function Switchboard(state, action) {
  			};
 
     case 'SET_DEPTH':
-      var reply = state.replies.get(action.sid)
-      reply.replied = true;
+      var updatedReplies = state.replies;
+      action.sid.map(function(s) {
+        var reply = updatedReplies.get(s);
+        reply.replied = true;
+        updatedReplies = updatedReplies.set(s, reply);
+      })
 
       return {
         numbers: state.numbers.set(action.number, action.depth),
@@ -175,7 +179,7 @@ function Switchboard(state, action) {
         twilioSID: state.twilioSID,
         twilioAut: state.twilioAut,
         twilioNum: state.twilioNum,
-        replies: state.replies.set(action.sid, reply),
+        replies: updatedReplies,
         firstSent: state.firstSent,
         started: state.started
       };

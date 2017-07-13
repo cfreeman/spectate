@@ -21,6 +21,7 @@
 import tk from 'timekeeper';
 import expect from 'expect';
 import { Map } from 'immutable';
+import { List } from 'immutable';
 import { Switchboard } from '../../src/reducers';
 
 let time;
@@ -71,17 +72,21 @@ describe('reducers', () => {
         it('should be able to set depth', () => {
             expect(Switchboard({numbers:Map({'+5551':0}),
                                 msgTree:[],
-                                replies:Map({'a': {'sid':'a', 'text':'12', 'replied': false}, 'b': {'sid':'b', 'text':'12', 'replied': false}}),
+                                replies:Map({'a': {'sid':'a', 'text':'12', 'replied': false},
+                                             'b': {'sid':'b', 'text':'12', 'replied': false},
+                                             'c': {'sid':'c', 'text':'12', 'replied': false}}),
                                 selectedNums:[],
                                 twilioAut:'',
                                 twilioNum:'',
                                 twilioSID:'',
                                 firstSent: false,
                                 started: Date.now()},
-                               {type: 'SET_DEPTH', number: '+5551', depth: 2, sid: 'a'})
+                               {type: 'SET_DEPTH', number: '+5551', depth: 2, sid:List(['a', 'c']) })
             ).toEqual({numbers:Map({'+5551':2}),
                        msgTree:[],
-                       replies:Map({'a': {'sid':'a', 'text':'12', 'replied': true}, 'b': {'sid':'b', 'text':'12', 'replied': false}}),
+                       replies:Map({'a': {'sid':'a', 'text':'12', 'replied': true},
+                                    'b': {'sid':'b', 'text':'12', 'replied': false},
+                                    'c': {'sid':'c', 'text':'12', 'replied': true}}),
                        twilioAut:'',
                        twilioNum:'',
                        twilioSID:'',

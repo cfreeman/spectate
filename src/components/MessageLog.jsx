@@ -27,8 +27,6 @@ var MessageLog = React.createClass({
         const { store } = this.context;
         var state = store.getState();
 
-        console.log(state.replies);
-
         // Build a set of colors to identify each conversation.
         var seq = palette('tol-rainbow', state.numbers.size);
         var colorMap = state.numbers.mapEntries(function(e, i) {
@@ -37,51 +35,74 @@ var MessageLog = React.createClass({
         });
 
         // Filter out all messages that were sent before the page loaded.
-        var valid = state.replies.filter(function(v, k, i) {
-            return Date.parse(v.date_sent) > state.started;
+        var valid = state.replies;
+
+        // Filter out all the messages that were sent before the page loaded.
+        // Then filter out all the messages except for incoming replies.
+        // Then sort the replies by the date/time they where sent.
+        valid = valid.filter((v, k, i) => { return Date.parse(v.date_sent) > state.started; })
+                     .filter((v, k, i) => { return (v.direction == 'inbound'); })
+                     .sort(function (a, b) {
+            if (a.date_sent < b.date_sent) { return 1; }
+            if (a.date_sent > b.date_sent) { return -1; }
+            return 0;
         });
 
-        // Filter outbound messages that come from a different number.
-        valid = valid.filterNot(function(v, k, i) {
-             return (v.direction == 'outbound-api' && v.from != state.twilioNum);
-        });
+        // Get the SMS's that haven't been replied yet.
+        // Then group them by their origin number and build a list of reply controls.
+        var controls = valid.filterNot((v, k, i) => { return v.replied; })
+                            .groupBy((v) => { return v.from; })
+                            .map(function(replies) {
 
-        console.log(valid);
+            replies = replies.sort(function(a, b) {
+                if (a.date_sent < b.date_sent) { return -1; }
+                if (a.date_sent > b.date_sent) { return 1; }
+                return 0;
+            });
 
-        var replies = [];
+            // Get the buttons to reply to this SMS.
+            var srcNum = replies.first().from;
+            var pos = state.msgTree[state.numbers.get(srcNum)];
+            if (pos === undefined) {
+                // Unknown position in message tree.
+                console.log("Unable to find Message: " + state.numbers.get(srcNum));
+                return;
+            }
 
-        valid.map(function(reply) {
-            var direction = ['Sent', 'to'];
-            var dst = reply.to;
-            var btns = "";
-
-            // Many of the operations only apply to inbound messages.
-            if (reply.direction == 'inbound') {
-                direction = ['Recieved', 'from'];
-                dst = reply.from
-
-                var pos = state.msgTree[state.numbers.get(dst)]
-                if (pos === undefined) {
-                    // Unknown number. Ignore message.
+            var btns = pos.children.map(function(id) {
+                if (state.msgTree[id] === undefined) {
+                    console.log("Unable to find Message: " + id);
                     return;
                 }
 
-                if (!reply.replied) {
-                    var btns = pos.children.map(function(id) {
-                        if (state.msgTree[id] === undefined) {
-                            console.log("Unable to find Message: " + id);
-                            return;
-                        }
+                return <MessageButton number={srcNum} sid={replies.map(x => x.sid)} depth={id} message={state.msgTree[id].text} />;
+            })
 
-                        return <MessageButton key={msg} number={dst} sid={reply.sid} depth={id} message={state.msgTree[id].text} />;
-                    })
-                }
-            }
+            // Build the HTML for the controls to reply to his SMS.
+            return([
+            <p className="log">
+                <b style={{color:colorMap.get(srcNum)}}>&#9608;&#9608;&#9608;</b>&nbsp;
+                Sent '{pos.text}' to {srcNum}.
+            </p>,
+            replies.map(function(reply) {
+                return(
+                <p className="log">
+                    <b style={{color:colorMap.get(reply.from)}}>&#9608;&#9608;&#9608;</b>&nbsp;
+                    Received <b>'{reply.body}'</b> from {reply.from}.
+                </p>);
+            }),
+            <p>{btns}&nbsp;</p>]);
+        });
 
-            replies.push(
-            <p className="log"><b style={{color:colorMap.get(dst)}}>&#9608;&#9608;&#9608;</b> {direction[0]} <b>'{reply.body}'</b> {direction[1]} {dst}. {btns}</p>);
-
-        })
+        // Show the rest of the SMS history.
+        var history = valid.filter((v, k, i) => { return (v.replied); })
+                           .map(function(reply) {
+            return (
+            <p className="log">
+                <b style={{color:colorMap.get(reply.from)}}>&#9608;&#9608;&#9608;</b>&nbsp;
+                Received <b>'{reply.body}'</b> from {reply.from}.
+            </p>);
+        });
 
         // Display the initial button for starting the performance.
         var button = null
@@ -94,7 +115,8 @@ var MessageLog = React.createClass({
             <div className="pure-u-1-1">
                 <h2>Message Flow:</h2>
                 { button }
-                { replies }
+                { controls }
+                { history }
             </div>
         )
     }

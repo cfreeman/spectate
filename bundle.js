@@ -28008,58 +28008,119 @@ var MessageLog = _react2.default.createClass({
         });
 
         // Filter out all messages that were sent before the page loaded.
-        var valid = state.replies.filter(function (v, k, i) {
+        var valid = state.replies;
+
+        // Filter out all the messages that were sent before the page loaded.
+        // Then filter out all the messages except for incoming replies.
+        // Then sort the replies by the date/time they where sent.
+        valid = valid.filter(function (v, k, i) {
             return Date.parse(v.date_sent) > state.started;
+        }).filter(function (v, k, i) {
+            return v.direction == 'inbound';
+        }).sort(function (a, b) {
+            if (a.date_sent < b.date_sent) {
+                return 1;
+            }
+            if (a.date_sent > b.date_sent) {
+                return -1;
+            }
+            return 0;
         });
 
-        // Filter outbound messages that come from a different number.
-        valid = valid.filterNot(function (v, k, i) {
-            return v.direction == 'outbound-api' && v.from != state.twilioNum;
-        });
+        // Get the SMS's that haven't been replied yet.
+        // Then group them by their origin number and build a list of reply controls.
+        var controls = valid.filterNot(function (v, k, i) {
+            return v.replied;
+        }).groupBy(function (v) {
+            return v.from;
+        }).map(function (replies) {
 
-        console.log(valid);
+            replies = replies.sort(function (a, b) {
+                if (a.date_sent < b.date_sent) {
+                    return -1;
+                }
+                if (a.date_sent > b.date_sent) {
+                    return 1;
+                }
+                return 0;
+            });
 
-        var replies = [];
+            // Get the buttons to reply to this SMS.
+            var srcNum = replies.first().from;
+            var pos = state.msgTree[state.numbers.get(srcNum)];
+            if (pos === undefined) {
+                // Unknown position in message tree.
+                console.log("Unable to find Message: " + state.numbers.get(srcNum));
+                return;
+            }
 
-        valid.map(function (reply) {
-            var direction = ['Sent', 'to'];
-            var dst = reply.to;
-            var btns = "";
-
-            // Many of the operations only apply to inbound messages.
-            if (reply.direction == 'inbound') {
-                direction = ['Recieved', 'from'];
-                dst = reply.from;
-
-                var pos = state.msgTree[state.numbers.get(dst)];
-                if (pos === undefined) {
-                    // Unknown number. Ignore message.
+            var btns = pos.children.map(function (id) {
+                if (state.msgTree[id] === undefined) {
+                    console.log("Unable to find Message: " + id);
                     return;
                 }
 
-                if (!reply.replied) {
-                    var btns = pos.children.map(function (id) {
-                        if (state.msgTree[id] === undefined) {
-                            console.log("Unable to find Message: " + id);
-                            return;
-                        }
+                return _react2.default.createElement(_MessageButton2.default, { number: srcNum, sid: replies.map(function (x) {
+                        return x.sid;
+                    }), depth: id, message: state.msgTree[id].text });
+            });
 
-                        return _react2.default.createElement(_MessageButton2.default, { key: msg, number: dst, sid: reply.sid, depth: id, message: state.msgTree[id].text });
-                    });
-                }
-            }
-
-            replies.push(_react2.default.createElement(
+            // Build the HTML for the controls to reply to his SMS.
+            return [_react2.default.createElement(
                 'p',
                 { className: 'log' },
                 _react2.default.createElement(
                     'b',
-                    { style: { color: colorMap.get(dst) } },
+                    { style: { color: colorMap.get(srcNum) } },
                     '\u2588\u2588\u2588'
                 ),
-                ' ',
-                direction[0],
-                ' ',
+                '\xA0 Sent \'',
+                pos.text,
+                '\' to ',
+                srcNum,
+                '.'
+            ), replies.map(function (reply) {
+                return _react2.default.createElement(
+                    'p',
+                    { className: 'log' },
+                    _react2.default.createElement(
+                        'b',
+                        { style: { color: colorMap.get(reply.from) } },
+                        '\u2588\u2588\u2588'
+                    ),
+                    '\xA0 Received ',
+                    _react2.default.createElement(
+                        'b',
+                        null,
+                        '\'',
+                        reply.body,
+                        '\''
+                    ),
+                    ' from ',
+                    reply.from,
+                    '.'
+                );
+            }), _react2.default.createElement(
+                'p',
+                null,
+                btns,
+                '\xA0'
+            )];
+        });
+
+        // Show the rest of the SMS history.
+        var history = valid.filter(function (v, k, i) {
+            return v.replied;
+        }).map(function (reply) {
+            return _react2.default.createElement(
+                'p',
+                { className: 'log' },
+                _react2.default.createElement(
+                    'b',
+                    { style: { color: colorMap.get(reply.from) } },
+                    '\u2588\u2588\u2588'
+                ),
+                '\xA0 Received ',
                 _react2.default.createElement(
                     'b',
                     null,
@@ -28067,13 +28128,10 @@ var MessageLog = _react2.default.createClass({
                     reply.body,
                     '\''
                 ),
-                ' ',
-                direction[1],
-                ' ',
-                dst,
-                '. ',
-                btns
-            ));
+                ' from ',
+                reply.from,
+                '.'
+            );
         });
 
         // Display the initial button for starting the performance.
@@ -28092,7 +28150,8 @@ var MessageLog = _react2.default.createClass({
                 'Message Flow:'
             ),
             button,
-            replies
+            controls,
+            history
         );
     }
 });
@@ -28714,8 +28773,12 @@ function Switchboard(state, action) {
       };
 
     case 'SET_DEPTH':
-      var reply = state.replies.get(action.sid);
-      reply.replied = true;
+      var updatedReplies = state.replies;
+      action.sid.map(function (s) {
+        var reply = updatedReplies.get(s);
+        reply.replied = true;
+        updatedReplies = updatedReplies.set(s, reply);
+      });
 
       return {
         numbers: state.numbers.set(action.number, action.depth),
@@ -28723,7 +28786,7 @@ function Switchboard(state, action) {
         twilioSID: state.twilioSID,
         twilioAut: state.twilioAut,
         twilioNum: state.twilioNum,
-        replies: state.replies.set(action.sid, reply),
+        replies: updatedReplies,
         firstSent: state.firstSent,
         started: state.started
       };
