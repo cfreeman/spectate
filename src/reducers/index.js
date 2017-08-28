@@ -23,12 +23,13 @@ import { Map } from 'immutable'
 
 const initialState = {
   numbers:Map({}),
+  msgBroadcast:[],
   msgTree:[],
   twilioSID:'',
   twilioAut:'',
   twilioNum:'',
   replies:Map({}),
-  firstSent: false,
+  broadcast: 0,
   started: null
 }
 
@@ -94,24 +95,26 @@ function Switchboard(state, action) {
  		case 'ADD_NUMBER':
  			return {
  				numbers: state.numbers.set(action.number, 0),
+        msgBroadcast: state.msgBroadcast,
         msgTree: state.msgTree,
  				twilioSID: state.twilioSID,
  				twilioAut: state.twilioAut,
  				twilioNum: state.twilioNum,
         replies: state.replies,
-        firstSent: state.firstSent,
+        broadcast: state.broadcast,
         started: state.started
  			};
 
-    case 'FIRST_SENT':
+    case 'BROADCAST':
       return {
         numbers: state.numbers,
+        msgBroadcast: state.msgBroadcast,
         msgTree: state.msgTree,
         twilioSID: state.twilioSID,
         twilioAut: state.twilioAut,
         twilioNum: state.twilioNum,
         replies: state.replies,
-        firstSent: true,
+        broadcast: state.broadcast + 1,
         started: state.started
       };
 
@@ -120,48 +123,52 @@ function Switchboard(state, action) {
 
  			return {
  				numbers: fromJS(data.numbers),
+        msgBroadcast: data.msgBroadcast,
         msgTree: data.msgTree,
  				twilioSID: data.twilioSID,
  				twilioAut: data.twilioAut,
  				twilioNum: data.twilioNum,
         replies: state.replies,
-        firstSent: state.firstSent,
+        broadcast: state.broadcast,
         started: state.started
  			};
 
  		case 'SET_TWILIOSID':
  			return {
  				numbers: state.numbers,
+        msgBroadcast: state.msgBroadcast,
         msgTree: state.msgTree,
  				twilioSID: action.twilioSID,
  				twilioAut: state.twilioAut,
  				twilioNum: state.twilioNum,
         replies: state.replies,
-        firstSent: state.firstSent,
+        broadcast: state.broadcast,
         started: state.started
  			};
 
  		case 'SET_TWILIOAUT':
  			return {
  				numbers: state.numbers,
+        msgBroadcast: state.msgBroadcast,
         msgTree: state.msgTree,
  				twilioSID: state.twilioSID,
  				twilioAut: action.twilioAut,
  				twilioNum: state.twilioNum,
         replies: state.replies,
-        firstSent: state.firstSent,
+        broadcast: state.broadcast,
         started: state.started
  			};
 
  		case 'SET_TWILIONUM':
  			return {
  				numbers: state.numbers,
+        msgBroadcast: state.msgBroadcast,
         msgTree: state.msgTree,
  				twilioSID: state.twilioSID,
  				twilioAut: state.twilioAut,
  				twilioNum: action.twilioNum,
         replies: state.replies,
-        firstSent: state.firstSent,
+        broadcast: state.broadcast,
         started: state.started
  			};
 
@@ -175,12 +182,13 @@ function Switchboard(state, action) {
 
       return {
         numbers: state.numbers.set(action.number, action.depth),
+        msgBroadcast: state.msgBroadcast,
         msgTree: state.msgTree,
         twilioSID: state.twilioSID,
         twilioAut: state.twilioAut,
         twilioNum: state.twilioNum,
         replies: updatedReplies,
-        firstSent: state.firstSent,
+        broadcast: state.broadcast,
         started: state.started
       };
 
@@ -198,12 +206,13 @@ function Switchboard(state, action) {
 
       return {
         numbers: state.numbers,
+        msgBroadcast: state.msgBroadcast,
         msgTree: state.msgTree,
         twilioSID: state.twilioSID,
         twilioAut: state.twilioAut,
         twilioNum: state.twilioNum,
         replies: newList,
-        firstSent: state.firstSent,
+        broadcast: state.broadcast,
         started: state.started
       };
 

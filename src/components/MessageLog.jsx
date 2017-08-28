@@ -106,9 +106,10 @@ var MessageLog = React.createClass({
 
         // Display the initial button for starting the performance.
         var button = null
-        if (state.msgTree.length != 0) {
-            var msg = state.msgTree[0].text;
-            button = <MessageButton key={msg} message={msg} first={state.firstSent} />
+
+        if (state.broadcast < state.msgBroadcast.length) {
+            var msg = state.msgBroadcast[state.broadcast];
+            button = <MessageButton key={msg} message={msg} broadcast={true} />
         }
 
         return (

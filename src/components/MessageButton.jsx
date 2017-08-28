@@ -29,8 +29,8 @@ var MessageButton = React.createClass({
     var state = store.getState();
     var msg = this.props.message;
 
-    if (typeof this.props.first != 'undefined' && !this.props.first) {
-      store.dispatch({ type:'FIRST_SENT'});
+    if (typeof this.props.broadcast != 'undefined' && this.props.broadcast) {
+      store.dispatch({ type:'BROADCAST'});
     }
 
     // If number supplied via props - just send to that.

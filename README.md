@@ -13,6 +13,7 @@
 * ~~Test navigation of message tree.~~
 * ~~group multiple replies to one reply message button.~~
 
+* Starting the performance.
 * Data-back and forth for handling phone numbers.
 * Message pagination?
 * Freeform texts.
