@@ -105,6 +105,19 @@ function Switchboard(state, action) {
         started: state.started
  			};
 
+    case 'LOAD_NUMBERS':
+      return {
+        numbers: state.numbers.concat(action.numbers),
+        msgBroadcast: state.msgBroadcast,
+        msgTree: state.msgTree,
+        twilioSID: state.twilioSID,
+        twilioAut: state.twilioAut,
+        twilioNum: state.twilioNum,
+        replies: state.replies,
+        broadcast: state.broadcast,
+        started: state.started
+      };
+
     case 'BROADCAST':
       return {
         numbers: state.numbers,

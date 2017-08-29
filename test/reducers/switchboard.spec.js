@@ -72,6 +72,28 @@ describe('reducers', () => {
                        started: Date.now()})
         })
 
+        it('should be able to set a batch of numbers', () => {
+            expect(Switchboard({numbers:Map({'+5551':0}),
+                                msgBroadcast:[],
+                                msgTree:[],
+                                replies:Map({}),
+                                twilioAut:'',
+                                twilioNum:'',
+                                twilioSID:'',
+                                broadcast:0,
+                                started: Date.now()},
+                               {type: 'LOAD_NUMBERS', numbers: Map({'+5552':0})})
+            ).toEqual({numbers:Map({'+5551':0, '+5552':0}),
+                       msgBroadcast:[],
+                       msgTree:[],
+                       replies:Map({}),
+                       twilioAut:'',
+                       twilioNum:'',
+                       twilioSID:'',
+                       broadcast:0,
+                       started: Date.now()})
+        })
+
         it('should be able to set depth', () => {
             expect(Switchboard({numbers:Map({'+5551':0}),
                                 msgBroadcast:[],

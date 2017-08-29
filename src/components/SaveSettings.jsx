@@ -37,6 +37,52 @@ SaveButton.contextTypes = {
   store: React.PropTypes.object
 };
 
+var LoadNumbers = React.createClass({
+	handleLoad: function(event) {
+		const { store } = this.context;
+		var state = store.getState();
+
+		var file = event.target.files[0];
+		if (!file) {
+			return;
+		}
+
+		var reader = new FileReader();
+
+		reader.onload = function(e) {
+			var column = 0;
+			var newNums = Map({});
+
+			this.result.split('\n').map(function(line, row) {
+				line.split(',').map(function(number, col) {
+					if ('+' + number == state.twilioNum) {
+						column = col;
+					} else if (column == col && row != 0) {
+						newNums = newNums.set("+61" + number, 0);
+						console.log("e: +61" + number);
+					}
+				});
+			});
+
+			console.log(newNums);
+			store.dispatch({type:'LOAD_NUMBERS', numbers:newNums});
+		};
+		reader.readAsText(file);
+	},
+
+	render: function() {
+		return (
+			<div className="fileUpload pure-button pure-button-primary">
+				<span>Load Contacts</span>
+				<input id="numbers-file" className="upload disabled" type="file" onChange={this.handleLoad}/>
+			</div>
+		);
+	}
+})
+LoadNumbers.contextTypes = {
+  store: React.PropTypes.object
+};
+
 var LoadButton = React.createClass({
 	handleLoad: function(event) {
 		const { store } = this.context;
@@ -67,4 +113,4 @@ LoadButton.contextTypes = {
   store: React.PropTypes.object
 };
 
-export { SaveButton, LoadButton };
+export { SaveButton, LoadButton, LoadNumbers };

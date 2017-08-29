@@ -19,6 +19,7 @@
 "use strict";
 
 import React from 'react';
+import { LoadNumbers } from './SaveSettings.jsx';
 
 var NumberList = React.createClass({
   handleKeyPress: function(event) {
@@ -42,12 +43,18 @@ var NumberList = React.createClass({
        return <option key={k} value={k}>{k}</option>;
     })
 
+    var loadNumbers = ''
+    if (state.twilioNum != '') {
+      loadNumbers = <LoadNumbers />
+    }
+
 		return (
 		  <div className="pure-u-1-1">
         <h2>Contacts: </h2>
         <fieldset className="pure-form">
         <input id="PhoneNumber" type="text" placeholder="Phone number" onKeyPress={this.handleKeyPress}></input>
         <button className="pure-button pure-button-primary add" onClick={this.handleAddNumber}>Add</button>
+        {loadNumbers}
         </fieldset>
         <select multiple className="numbers">{ n }</select>
       </div>

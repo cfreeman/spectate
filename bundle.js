@@ -28189,6 +28189,8 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _SaveSettings = require('./SaveSettings.jsx');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var NumberList = _react2.default.createClass({
@@ -28221,6 +28223,11 @@ var NumberList = _react2.default.createClass({
       );
     });
 
+    var loadNumbers = '';
+    if (state.twilioNum != '') {
+      loadNumbers = _react2.default.createElement(_SaveSettings.LoadNumbers, null);
+    }
+
     return _react2.default.createElement(
       'div',
       { className: 'pure-u-1-1' },
@@ -28237,7 +28244,8 @@ var NumberList = _react2.default.createClass({
           'button',
           { className: 'pure-button pure-button-primary add', onClick: this.handleAddNumber },
           'Add'
-        )
+        ),
+        loadNumbers
       ),
       _react2.default.createElement(
         'select',
@@ -28253,7 +28261,7 @@ NumberList.contextTypes = {
 
 exports.default = NumberList;
 
-},{"react":205}],219:[function(require,module,exports){
+},{"./SaveSettings.jsx":219,"react":205}],219:[function(require,module,exports){
 /*
  * Copyright (c) Clinton Freeman 2017
  *
@@ -28277,7 +28285,7 @@ exports.default = NumberList;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.LoadButton = exports.SaveButton = undefined;
+exports.LoadNumbers = exports.LoadButton = exports.SaveButton = undefined;
 
 var _immutable = require('immutable');
 
@@ -28306,6 +28314,59 @@ var SaveButton = _react2.default.createClass({
 	}
 });
 SaveButton.contextTypes = {
+	store: _react2.default.PropTypes.object
+};
+
+var LoadNumbers = _react2.default.createClass({
+	displayName: 'LoadNumbers',
+
+	handleLoad: function handleLoad(event) {
+		var store = this.context.store;
+
+		var state = store.getState();
+
+		var file = event.target.files[0];
+		if (!file) {
+			return;
+		}
+
+		var reader = new FileReader();
+
+		reader.onload = function (e) {
+			var column = 0;
+			var newNums = (0, _immutable.Map)({});
+
+			this.result.split('\n').map(function (line, row) {
+				line.split(',').map(function (number, col) {
+					if ('+' + number == state.twilioNum) {
+						column = col;
+					} else if (column == col && row != 0) {
+						newNums = newNums.set("+61" + number, 0);
+						console.log("e: +61" + number);
+					}
+				});
+			});
+
+			console.log(newNums);
+			store.dispatch({ type: 'LOAD_NUMBERS', numbers: newNums });
+		};
+		reader.readAsText(file);
+	},
+
+	render: function render() {
+		return _react2.default.createElement(
+			'div',
+			{ className: 'fileUpload pure-button pure-button-primary' },
+			_react2.default.createElement(
+				'span',
+				null,
+				'Load Contacts'
+			),
+			_react2.default.createElement('input', { id: 'numbers-file', className: 'upload disabled', type: 'file', onChange: this.handleLoad })
+		);
+	}
+});
+LoadNumbers.contextTypes = {
 	store: _react2.default.PropTypes.object
 };
 
@@ -28348,6 +28409,7 @@ LoadButton.contextTypes = {
 
 exports.SaveButton = SaveButton;
 exports.LoadButton = LoadButton;
+exports.LoadNumbers = LoadNumbers;
 
 },{"immutable":26,"react":205}],220:[function(require,module,exports){
 /*
@@ -28701,6 +28763,19 @@ function Switchboard(state, action) {
     case 'ADD_NUMBER':
       return {
         numbers: state.numbers.set(action.number, 0),
+        msgBroadcast: state.msgBroadcast,
+        msgTree: state.msgTree,
+        twilioSID: state.twilioSID,
+        twilioAut: state.twilioAut,
+        twilioNum: state.twilioNum,
+        replies: state.replies,
+        broadcast: state.broadcast,
+        started: state.started
+      };
+
+    case 'LOAD_NUMBERS':
+      return {
+        numbers: state.numbers.concat(action.numbers),
         msgBroadcast: state.msgBroadcast,
         msgTree: state.msgTree,
         twilioSID: state.twilioSID,

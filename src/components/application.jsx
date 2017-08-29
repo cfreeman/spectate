@@ -20,9 +20,9 @@
 
 import React from 'react';
 import { GetSMS } from '../reducers/index.js';
-import NumberList from './NumberList.jsx'
-import MessageLog from './MessageLog.jsx'
-import { SaveButton, LoadButton } from './SaveSettings.jsx'
+import NumberList from './NumberList.jsx';
+import MessageLog from './MessageLog.jsx';
+import { SaveButton, LoadButton } from './SaveSettings.jsx';
 
 var TwilioSID = React.createClass({
   getIntialState: function() {

@@ -12,11 +12,14 @@
 * ~~Messages sent from other tabs / operators don't appear in your tab.~~
 * ~~Test navigation of message tree.~~
 * ~~group multiple replies to one reply message button.~~
+* ~~Starting the performance.~~
+* ~~add three twilio number.~~
 
-* Starting the performance.
 * Data-back and forth for handling phone numbers.
 * Message pagination?
 * Freeform texts.
 * disable screen from scrolling automatically when messages come in.
-* add three twilio number.
 * pre-performance test button.
+
+Source number spreadsheet.
+
