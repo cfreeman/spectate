@@ -1,5 +1,10 @@
 ## TODO:
 
+* Freeform texts.
+* Message pagination?
+* disable screen from scrolling automatically when messages come in.
+* pre-performance test button.
+
 * ~~Append sent message to outbound log.~~
 * ~~Get inbound messages and write them to message log.~~
 * ~~sign up for more credit.~~
@@ -14,12 +19,4 @@
 * ~~group multiple replies to one reply message button.~~
 * ~~Starting the performance.~~
 * ~~add three twilio number.~~
-
-* Data-back and forth for handling phone numbers.
-* Message pagination?
-* Freeform texts.
-* disable screen from scrolling automatically when messages come in.
-* pre-performance test button.
-
-Source number spreadsheet.
-
+* ~~ Source number spreadsheet. ~~

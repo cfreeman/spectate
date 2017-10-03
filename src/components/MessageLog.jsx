@@ -55,8 +55,8 @@ var MessageLog = React.createClass({
                             .map(function(replies) {
 
             replies = replies.sort(function(a, b) {
-                if (a.date_sent < b.date_sent) { return -1; }
-                if (a.date_sent > b.date_sent) { return 1; }
+                if (a.date_sent < b.date_sent) { return 1; }
+                if (a.date_sent > b.date_sent) { return -1; }
                 return 0;
             });
 
