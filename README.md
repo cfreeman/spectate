@@ -1,10 +1,10 @@
 ## TODO:
 
-* Freeform texts.
 * Message pagination?
-* disable screen from scrolling automatically when messages come in.
+* Freeform texts.
 * pre-performance test button.
 
+* ~~disable screen from scrolling automatically when messages come in.~~
 * ~~Append sent message to outbound log.~~
 * ~~Get inbound messages and write them to message log.~~
 * ~~sign up for more credit.~~

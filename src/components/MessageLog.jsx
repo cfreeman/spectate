@@ -52,13 +52,11 @@ var MessageLog = React.createClass({
         // Then group them by their origin number and build a list of reply controls.
         var controls = valid.filterNot((v, k, i) => { return v.replied; })
                             .groupBy((v) => { return v.from; })
-                            .map(function(replies) {
-
-            replies = replies.sort(function(a, b) {
-                if (a.date_sent < b.date_sent) { return 1; }
-                if (a.date_sent > b.date_sent) { return -1; }
-                return 0;
-            });
+                            .sort(function(a, b) {
+                                if (a.first().date_sent < b.first().date_sent) { return -1; }
+                                if (a.first().date_sent > b.first().date_sent) { return 1; }
+                                return 0;
+                            }).map(function(replies) {
 
             // Get the buttons to reply to this SMS.
             var srcNum = replies.first().from;

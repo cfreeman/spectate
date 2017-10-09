@@ -28031,17 +28031,15 @@ var MessageLog = _react2.default.createClass({
             return v.replied;
         }).groupBy(function (v) {
             return v.from;
+        }).sort(function (a, b) {
+            if (a.first().date_sent < b.first().date_sent) {
+                return -1;
+            }
+            if (a.first().date_sent > b.first().date_sent) {
+                return 1;
+            }
+            return 0;
         }).map(function (replies) {
-
-            replies = replies.sort(function (a, b) {
-                if (a.date_sent < b.date_sent) {
-                    return -1;
-                }
-                if (a.date_sent > b.date_sent) {
-                    return 1;
-                }
-                return 0;
-            });
 
             // Get the buttons to reply to this SMS.
             var srcNum = replies.first().from;
