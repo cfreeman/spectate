@@ -28041,6 +28041,15 @@ var MessageLog = _react2.default.createClass({
             return 0;
         }).map(function (replies) {
 
+            // If we are still at the initial broadcast phase of the performance - ignore the current replies.
+            if (state.broadcast < state.msgBroadcast.length) {
+                // Mark message has replied.
+                store.dispatch({ type: 'SET_REPLIED', sid: replies.map(function (x) {
+                        return x.sid;
+                    }) });
+                return;
+            }
+
             // Get the buttons to reply to this SMS.
             var srcNum = replies.first().from;
             var pos = state.msgTree[state.numbers.get(srcNum)];
@@ -28847,6 +28856,26 @@ function Switchboard(state, action) {
         twilioAut: state.twilioAut,
         twilioNum: action.twilioNum,
         replies: state.replies,
+        broadcast: state.broadcast,
+        started: state.started
+      };
+
+    case 'SET_REPLIED':
+      var updatedReplies = state.replies;
+      action.sid.map(function (s) {
+        var reply = updatedReplies.get(s);
+        reply.replied = true;
+        updatedReplies = updatedReplies.set(s, reply);
+      });
+
+      return {
+        numbers: state.numbers,
+        msgBroadcast: state.msgBroadcast,
+        msgTree: state.msgTree,
+        twilioSID: state.twilioSID,
+        twilioAut: state.twilioAut,
+        twilioNum: state.twilioNum,
+        replies: updatedReplies,
         broadcast: state.broadcast,
         started: state.started
       };

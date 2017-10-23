@@ -94,6 +94,33 @@ describe('reducers', () => {
                        started: Date.now()})
         })
 
+        it('should be able to set replied', () => {
+            expect(Switchboard({numbers:Map({'+5551':0}),
+                                msgBroadcast:[],
+                                msgTree:[],
+                                replies:Map({'a': {'sid':'a', 'text':'12', 'replied': false},
+                                             'b': {'sid':'b', 'text':'12', 'replied': false},
+                                             'c': {'sid':'c', 'text':'12', 'replied': false}}),
+                                selectedNums:[],
+                                twilioAut:'',
+                                twilioNum:'',
+                                twilioSID:'',
+                                broadcast:0,
+                                started: Date.now()},
+                               {type: 'SET_REPLIED', sid:List(['a', 'c']) })
+            ).toEqual({numbers:Map({'+5551':0}),
+                       msgBroadcast:[],
+                       msgTree:[],
+                       replies:Map({'a': {'sid':'a', 'text':'12', 'replied': true},
+                                    'b': {'sid':'b', 'text':'12', 'replied': false},
+                                    'c': {'sid':'c', 'text':'12', 'replied': true}}),
+                       twilioAut:'',
+                       twilioNum:'',
+                       twilioSID:'',
+                       broadcast:0,
+                       started: Date.now()})
+        })
+
         it('should be able to set depth', () => {
             expect(Switchboard({numbers:Map({'+5551':0}),
                                 msgBroadcast:[],

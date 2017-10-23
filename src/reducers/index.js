@@ -185,6 +185,27 @@ function Switchboard(state, action) {
         started: state.started
  			};
 
+    case 'SET_REPLIED':
+      var updatedReplies = state.replies;
+      action.sid.map(function(s) {
+        var reply = updatedReplies.get(s);
+        reply.replied = true;
+        updatedReplies = updatedReplies.set(s, reply);
+      });
+
+      return {
+        numbers: state.numbers,
+        msgBroadcast: state.msgBroadcast,
+        msgTree: state.msgTree,
+        twilioSID: state.twilioSID,
+        twilioAut: state.twilioAut,
+        twilioNum: state.twilioNum,
+        replies: updatedReplies,
+        broadcast: state.broadcast,
+        started: state.started
+      };
+
+
     case 'SET_DEPTH':
       var updatedReplies = state.replies;
       action.sid.map(function(s) {
