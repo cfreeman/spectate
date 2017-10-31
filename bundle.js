@@ -27998,6 +27998,8 @@ var MessageLog = _react2.default.createClass({
 
         var state = store.getState();
 
+        //console.log(state.numbers);
+
         // Build a set of colors to identify each conversation.
         var seq = palette('tol-rainbow', state.numbers.size);
         var colorMap = state.numbers.mapEntries(function (e, i) {
@@ -28557,8 +28559,9 @@ var Application = _react2.default.createClass({
     var state = store.getState();
 
     if (state.twilioSID != '' && state.twilioAut != '' && state.twilioNum) {
-      var smsP = (0, _index.GetSMS)(state.twilioSID, state.twilioAut, twilioNum);
-      smsP.then(function (value) {
+      var smp = (0, _index.GetSMS)(state.twilioSID, state.twilioAut, twilioNum);
+
+      smp.then(function (value) {
         store.dispatch({ type: 'SET_REPLIES', replies: value });
       });
     }
@@ -28712,9 +28715,7 @@ var initialState = {
   started: null
 };
 
-// GetSMS gets all the SMS messages that have been sent to dstNum in the twilio account identified by
-// twilioSID and twilioAut. Returns a promise that resolves to parsed JSON.
-function GetSMS(twilioSID, twilioAut, dstNum) {
+function GetFirstSMSPage(twilioSID, twilioAut, dstNum) {
   return new Promise(function (resolve, reject) {
     var xhr = new XMLHttpRequest();
 
@@ -28729,12 +28730,55 @@ function GetSMS(twilioSID, twilioAut, dstNum) {
 
     xhr.onreadystatechange = function () {
       if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
-        resolve(JSON.parse(xhr.responseText));
+        var json = JSON.parse(xhr.responseText);
+        var msgs = (0, _immutable.List)(json.messages);
+
+        if (json.next_page_uri) {
+          var nextP = GetNextSMSPage(twilioSID, twilioAut, json.next_page_uri, msgs);
+          nextP.then(function (allMsgs) {
+            resolve(allMsgs);
+          });
+        } else {
+          resolve(msgs);
+        }
       }
     };
 
     xhr.send();
   });
+}
+
+function GetNextSMSPage(twilioSID, twilioAut, nextPageURI, existingMessages) {
+  return new Promise(function (resolve, reject) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", 'https://api.twilio.com' + nextPageURI, true);
+    xhr.setRequestHeader("Authorization", "Basic " + window.btoa(twilioSID + ':' + twilioAut));
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+
+        var json = JSON.parse(xhr.responseText);
+        var msgs = existingMessages.concat((0, _immutable.List)(json.messages));
+
+        if (json.next_page_uri) {
+          var nextP = GetNextSMSPage(twilioSID, twilioAut, json.next_page_uri, msgs);
+          nextP.then(function (nextMsgs) {
+            resolve(nextMsgs);
+          });
+        } else {
+          resolve(msgs);
+        }
+      }
+    };
+
+    xhr.send();
+  });
+}
+
+// GetSMS gets all the SMS messages that have been sent to dstNum in the twilio account identified by
+// twilioSID and twilioAut. Returns a promise that resolves to parsed JSON.
+function GetSMS(twilioSID, twilioAut, dstNum) {
+  return GetFirstSMSPage(twilioSID, twilioAut, dstNum);
 }
 
 // SendSMS triggers the twilio account identified by twilioSID and twilioAuth to send a SMS msg from
@@ -28903,7 +28947,7 @@ function Switchboard(state, action) {
     case 'SET_REPLIES':
       var newList = (0, _immutable.Map)({});
 
-      action.replies.messages.map(function (reply) {
+      action.replies.map(function (reply) {
         if (state.replies.has(reply.sid)) {
           newList = newList.set(reply.sid, state.replies.get(reply.sid));
         } else {

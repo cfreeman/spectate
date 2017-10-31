@@ -270,7 +270,7 @@ describe('reducers', () => {
                                 twilioSID:'',
                                 broadcast:0,
                                 started: Date.now()},
-                               {type: 'SET_REPLIES', replies: {"messages" : [{'sid':'a', 'text':'12'}, {'sid':'b', 'text':'12'}]}})
+                               {type: 'SET_REPLIES', replies: List([{'sid':'a', 'text':'12'}, {'sid':'b', 'text':'12'}])})
             ).toEqual({numbers:[],
                        msgBroadcast:[],
                        msgTree:[],

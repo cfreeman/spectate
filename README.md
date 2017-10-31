@@ -1,9 +1,13 @@
-## TODO:
+## Testing:
+* Run short page sizes to test that works all OK.
 
-* Message pagination?
+## TODO:
+* Fix bug - skilling message at the start of the performance (first after broadcast).
 * Freeform texts.
 * pre-performance test button.
 
+
+* ~~Message pagination?~~
 * ~~disable screen from scrolling automatically when messages come in.~~
 * ~~Append sent message to outbound log.~~
 * ~~Get inbound messages and write them to message log.~~

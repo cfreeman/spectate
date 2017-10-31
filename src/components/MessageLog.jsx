@@ -27,6 +27,8 @@ var MessageLog = React.createClass({
         const { store } = this.context;
         var state = store.getState();
 
+        //console.log(state.numbers);
+
         // Build a set of colors to identify each conversation.
         var seq = palette('tol-rainbow', state.numbers.size);
         var colorMap = state.numbers.mapEntries(function(e, i) {

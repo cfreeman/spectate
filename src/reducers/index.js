@@ -19,7 +19,7 @@
 "use strict";
 
 import { fromJS } from 'immutable'
-import { Map } from 'immutable'
+import { Map, List } from 'immutable'
 
 const initialState = {
   numbers:Map({}),
@@ -33,9 +33,7 @@ const initialState = {
   started: null
 }
 
-// GetSMS gets all the SMS messages that have been sent to dstNum in the twilio account identified by
-// twilioSID and twilioAut. Returns a promise that resolves to parsed JSON.
-function GetSMS(twilioSID, twilioAut, dstNum) {
+function GetFirstSMSPage(twilioSID, twilioAut, dstNum) {
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest();
 
@@ -52,12 +50,55 @@ function GetSMS(twilioSID, twilioAut, dstNum) {
 
     xhr.onreadystatechange = function() {
       if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
-        resolve(JSON.parse(xhr.responseText));
+        var json = JSON.parse(xhr.responseText);
+        var msgs = List(json.messages);
+
+        if (json.next_page_uri) {
+          var nextP = GetNextSMSPage(twilioSID, twilioAut, json.next_page_uri, msgs);
+          nextP.then(function(allMsgs) {
+            resolve(allMsgs);
+          });
+        } else {
+          resolve(msgs);
+        }
       }
     }
 
     xhr.send();
   });
+}
+
+function GetNextSMSPage(twilioSID, twilioAut, nextPageURI, existingMessages) {
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", 'https://api.twilio.com' + nextPageURI, true);
+    xhr.setRequestHeader("Authorization", "Basic " + window.btoa(twilioSID + ':' + twilioAut));
+
+    xhr.onreadystatechange = function() {
+      if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+
+        var json = JSON.parse(xhr.responseText);
+        var msgs = existingMessages.concat(List(json.messages));
+
+        if (json.next_page_uri) {
+          var nextP = GetNextSMSPage(twilioSID, twilioAut, json.next_page_uri, msgs);
+          nextP.then(function(nextMsgs) {
+            resolve(nextMsgs);
+          });
+        } else {
+          resolve(msgs);
+        }
+      }
+    }
+
+    xhr.send();
+  });
+}
+
+// GetSMS gets all the SMS messages that have been sent to dstNum in the twilio account identified by
+// twilioSID and twilioAut. Returns a promise that resolves to parsed JSON.
+function GetSMS(twilioSID, twilioAut, dstNum) {
+  return GetFirstSMSPage(twilioSID, twilioAut, dstNum);
 }
 
 // SendSMS triggers the twilio account identified by twilioSID and twilioAuth to send a SMS msg from
@@ -229,7 +270,7 @@ function Switchboard(state, action) {
     case 'SET_REPLIES':
       var newList = Map({});
 
-      action.replies.messages.map(function(reply) {
+      action.replies.map(function(reply) {
         if (state.replies.has(reply.sid)) {
           newList = newList.set(reply.sid, state.replies.get(reply.sid));
         } else {

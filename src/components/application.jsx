@@ -103,15 +103,15 @@ TwilioNum.contextTypes = {
   store: React.PropTypes.object
 };
 
-
 var Application = React.createClass({
 	loadFromServer: function() {
     const { store } = this.context;
     var state = store.getState();
 
     if (state.twilioSID != '' && state.twilioAut != '' && state.twilioNum) {
-      var smsP = GetSMS(state.twilioSID, state.twilioAut, twilioNum);
-      smsP.then(function(value) {
+      var smp = GetSMS(state.twilioSID, state.twilioAut, twilioNum);
+
+      smp.then(function(value) {
         store.dispatch({type: 'SET_REPLIES', replies:value});
       });
     }
