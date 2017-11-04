@@ -27,12 +27,9 @@ var MessageLog = React.createClass({
         const { store } = this.context;
         var state = store.getState();
 
-        //console.log(state.numbers);
-
         // Build a set of colors to identify each conversation.
         var seq = palette('tol-rainbow', state.numbers.size);
         var colorMap = state.numbers.mapEntries(function(e, i) {
-            console.log(e[0]);
             return [e[0], "#"+seq[i]];
         });
 
@@ -69,6 +66,7 @@ var MessageLog = React.createClass({
 
             // Get the buttons to reply to this SMS.
             var srcNum = replies.first().from;
+
             var pos = state.msgTree[state.numbers.get(srcNum)];
             if (pos === undefined) {
                 // Unknown position in message tree.
