@@ -44,7 +44,7 @@ function GetFirstSMSPage(twilioSID, twilioAut, dstNum) {
     var dy = now.getUTCDate();
 
     xhr.open("GET",
-             'https://api.twilio.com/2010-04-01/Accounts/' + twilioSID + '/Messages.json?DateSent>='+yr+'-'+mt+'-'+dy+'&PageSize=50',
+             'https://api.twilio.com/2010-04-01/Accounts/' + twilioSID + '/Messages.json?DateSent>='+yr+'-'+mt+'-'+dy+'&PageSize=1000',
              true);
     xhr.setRequestHeader("Authorization", "Basic " + window.btoa(twilioSID + ':' + twilioAut));
 
