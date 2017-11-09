@@ -28345,16 +28345,14 @@ var LoadNumbers = _react2.default.createClass({
 
 			this.result.split('\n').map(function (line, row) {
 				line.split(',').map(function (number, col) {
-					if ('+' + number == state.twilioNum) {
+					if ('+' + number.trim() == state.twilioNum) {
 						column = col;
-					} else if (column == col && row != 0) {
+					} else if (column == col && row != 0 && number.trim() != '') {
 						newNums = newNums.set("+61" + number, 0);
-						console.log("e: +61" + number);
 					}
 				});
 			});
 
-			console.log(newNums);
 			store.dispatch({ type: 'LOAD_NUMBERS', numbers: newNums });
 		};
 		reader.readAsText(file);
